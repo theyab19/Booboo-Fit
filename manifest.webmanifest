@@ -1,0 +1,34 @@
+{
+  "name": "بوبو فت — Booboo Fit",
+  "short_name": "بوبو فت",
+  "description": "برنامجك ٣ أيام — دفع · سحب · أرجل 🎀",
+  "dir": "rtl",
+  "lang": "ar",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF4F8",
+  "theme_color": "#FFDDEC",
+  "start_url": "./",
+  "scope": "./",
+  "categories": ["health", "fitness", "lifestyle"],
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

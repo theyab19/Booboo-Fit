@@ -1,0 +1,9 @@
+# Local tooling / editor
+.claude/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# gstack browse skill local logs
+.gstack/
