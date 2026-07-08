@@ -118,7 +118,7 @@
           cues: ['على أربع وثبّتي مرفقيك', 'اطلعي فوق بتبعيد لوحي الكتف', 'ارجعي بضمّهم بدون ما تنزل بطنك'] },
         { ar: 'مدّ ولفّ الجذع', en: 'Kneeling T-Spine Reach', reps: '٥ لكل جهة', illu: 'kneel', gif: NML + '2021/03/opposite-hand-stretch.gif',
           cues: ['اجلسي على كعوبك ويدك على راسك', 'لفّي مرفقك للسقف وتابعيه بعينك', 'رجّعيه تحت بلطف وكرري'] },
-        { ar: 'ضغط حائط + مجموعات تحضير', en: 'Wall Push-ups + Warm-up Sets', reps: '١٠ + ٢ خفيفة', illu: 'press', gif: null,
+        { ar: 'ضغط حائط + مجموعات تحضير', en: 'Wall Push-ups + Warm-up Sets', reps: '١٠ + ٢ خفيفة', illu: 'press', gif: FP + '2021/04/Wall-Push-ups.gif',
           cues: ['١٠ ضغطات على الحائط تفتح صدرك', 'بعدها مجموعتين خفيفتين من أول تمرين', 'خفيفة عشان تسخّني مو تتعبي'] }
       ],
       exercises: [
@@ -150,7 +150,7 @@
       warmup: [
         { ar: 'القطة والبقرة', en: 'Cat-Cow', reps: '×٨–١٠', illu: 'kneel', gif: NML + '2025/12/cat-cow-stretch-Cool-Down-Stretches.gif',
           cues: ['على أربع، بدّلي بين تقويس وتحديب', 'تحرّكي من فقرة لفقرة بهدوء', 'تنفّسي مع كل حركة'] },
-        { ar: 'ضم لوحي الكتف', en: 'Scapular Squeeze', reps: '×١٠', illu: 'raise', gif: null,
+        { ar: 'ضم لوحي الكتف', en: 'Scapular Squeeze', reps: '×١٠', illu: 'raise', gif: FP + '2021/06/Band-pull-apart.gif',
           cues: ['وقفة مستقيمة وذراعيك للجانب', 'اضمّي لوحي كتفك للخلف', 'ثبّتي ثانية وارخي بهدوء'] },
         { ar: 'الفراشة بظهر مقوّس وممدود', en: 'Butterfly Rounded & Flat Back', reps: '×٨', illu: 'seated', gif: NML + '2021/03/butterfly.gif',
           cues: ['اجلسي وباطن قدميك مع بعض', 'مرّة بظهر مقوّس ومرّة ممدود', 'ادفعي ركبك للأرض بلطف'] }
@@ -194,7 +194,7 @@
           cues: ['اطلعي خطوة أمامية واسعة', 'نزّلي مرفقك جنب قدمك', 'لفّي جذعك وارفعي يدك للسقف'] },
         { ar: 'تدوير الورك ٩٠/٩٠', en: '90/90 Hip Rotations', reps: '٥ لكل جهة', illu: 'seated', gif: NML + '2025/09/8-hip-rotations.gif',
           cues: ['اجلسي ورجليك بزاوية ٩٠', 'بدّلي ركبك من جهة لجهة', 'خلي الحركة من الورك بهدوء'] },
-        { ar: 'دفع ورك تحضيري', en: 'Warm-up Hip Thrust', reps: '٢ خفيفة', illu: 'bridge', gif: null,
+        { ar: 'دفع ورك تحضيري', en: 'Warm-up Hip Thrust', reps: '٢ خفيفة', illu: 'bridge', gif: FP + '2022/04/bodyweight-hip-thrust.gif',
           cues: ['نفس حركة دفع الورك بوزن خفيف', 'ركّزي على دفع الكعب وعصر المؤخرة', 'تسخين مو إجهاد'] }
       ],
       exercises: [
