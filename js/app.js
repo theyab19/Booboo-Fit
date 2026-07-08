@@ -6,7 +6,6 @@
   'use strict';
 
   /* ---------- helpers ---------- */
-  const $ = (sel, root = document) => root.querySelector(sel);
   const AR_DIGITS = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
   const toAr = (v) => String(v).replace(/[0-9]/g, (d) => AR_DIGITS[+d]);
   const el = (html) => {
@@ -16,16 +15,42 @@
   };
 
   /* ==========================================================================
+     Inline line-icon set (currentColor, 24x24). Replaces all emoji.
+     ========================================================================== */
+  const ICON_PATHS = {
+    dumbbell: '<rect x="2.5" y="8.5" width="3.6" height="7" rx="1.2"/><rect x="17.9" y="8.5" width="3.6" height="7" rx="1.2"/><path d="M6.1 12h11.8"/><path d="M6.3 10.4v3.2M17.7 10.4v3.2"/>',
+    pulse: '<path d="M3 12h4l3 8 4-16 3 8h4"/>',
+    leaf: '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.4 5.1-6"/>',
+    play: '<path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/>',
+    pause: '<rect x="6.5" y="5" width="3.5" height="14" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="5" width="3.5" height="14" rx="1" fill="currentColor" stroke="none"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3.2 2"/>',
+    reset: '<path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4.5V9h-4.5"/>',
+    star: '<path d="m12 3 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.2l5.9-.9z"/>',
+    trend: '<path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/>',
+    bulb: '<path d="M9.5 18h5"/><path d="M10 21.5h4"/><path d="M12 2.5a6.5 6.5 0 0 0-3.7 11.8c.5.4.9 1 .9 1.7V17h5.6v-1c0-.7.4-1.3.9-1.7A6.5 6.5 0 0 0 12 2.5Z"/>',
+    check: '<path d="M20 6.5 9 17.5l-5-5"/>',
+    heart: '<path d="M12 20.5S3.8 15.6 3.8 9.9A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 8.2 2.9c0 5.7-8.2 10.6-8.2 10.6z"/>'
+  };
+  const icon = (name, cls) =>
+    `<svg class="ic${cls ? ' ' + cls : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" ` +
+    `stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON_PATHS[name] || ''}</svg>`;
+
+  // Phase metadata: label + icon per phase type
+  const PHASE = {
+    warmup:   { tag: 'إحماء',  icon: 'pulse',    head: 'الإحماء قبل التمرين', unit: 'حركات' },
+    exercise: { tag: 'تمرين',  icon: 'dumbbell', head: 'التمارين',            unit: 'تمارين' },
+    stretch:  { tag: 'إطالة',  icon: 'leaf',     head: 'الإطالة بعد التمرين',  unit: 'إطالات' }
+  };
+
+  /* ==========================================================================
      SVG stick-figure illustrations (shown when a GIF fails / offline)
      One recognizable archetype per movement pattern. Uses currentColor.
      ========================================================================== */
   const wrap = (inner) => `
     <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
       <ellipse cx="160" cy="165" rx="94" ry="7" fill="currentColor" opacity="0.10"/>
-      <path d="M288 30c-6-8-19-2-15 8 3 7 15 13 15 13s12-6 15-13c4-10-9-16-15-8z" fill="currentColor" opacity="0.20"/>
       <g fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">${inner}</g>
     </svg>`;
-  // head + ponytail at (x,y)
   const head = (x, y) =>
     `<circle cx="${x}" cy="${y}" r="13" fill="currentColor" stroke="none"/>` +
     `<path d="M${x + 9} ${y - 4} q16 5 11 23 q-8 -5 -13 -11z" fill="currentColor" stroke="none" opacity="0.8"/>`;
@@ -34,68 +59,53 @@
     press: wrap(head(196, 52) +
       '<path d="M196 65 V116"/><path d="M196 116 l-16 34 M196 116 l16 34"/>' +
       '<path d="M190 74 L128 78 M190 82 L128 86"/><circle cx="120" cy="82" r="9" fill="currentColor" stroke="none"/><path d="M112 60 V104"/>'),
-
     overhead: wrap(head(160, 58) +
       '<path d="M160 71 V120"/><path d="M160 120 l-15 32 M160 120 l15 32"/>' +
       '<path d="M158 72 L146 40 L146 22 M162 72 L174 40 L174 22"/><path d="M138 20 H182"/>'),
-
     raise: wrap(head(160, 54) +
       '<path d="M160 67 V118"/><path d="M160 118 l-15 34 M160 118 l15 34"/>' +
       '<path d="M160 72 L122 66 L98 62 M160 72 L198 66 L222 62"/>' +
       '<circle cx="92" cy="61" r="7" fill="currentColor" stroke="none"/><circle cx="228" cy="61" r="7" fill="currentColor" stroke="none"/>'),
-
     pushdown: wrap(head(158, 50) +
       '<path d="M158 63 V116"/><path d="M158 116 l-15 34 M158 116 l15 34"/>' +
       '<path d="M158 70 L150 96 L150 124 M162 70 L154 96 L154 124"/><path d="M138 126 H166"/>'),
-
     pulldown: wrap(head(160, 66) +
       '<path d="M160 79 V126"/><path d="M160 126 l-15 28 M160 126 l15 28"/>' +
       '<path d="M154 74 L138 42 L128 28 M166 74 L182 42 L192 28"/><path d="M116 26 H204"/>'),
-
     row: wrap(head(206, 66) +
       '<path d="M200 74 L150 112"/><path d="M150 112 l-6 40 M150 112 l22 34"/>' +
       '<path d="M192 82 L176 106 L200 112"/><path d="M120 118 H150"/>'),
-
     curl: wrap(head(160, 48) +
       '<path d="M160 61 V114"/><path d="M160 114 l-15 36 M160 114 l15 36"/>' +
       '<path d="M160 68 L158 100 L182 74"/><circle cx="188" cy="68" r="8" fill="currentColor" stroke="none"/>' +
       '<path d="M160 70 L146 96"/>'),
-
     hinge: wrap(head(112, 70) +
       '<path d="M118 76 L162 112"/><path d="M162 112 l-8 40 M162 112 l16 40"/>' +
       '<path d="M126 84 V120 M126 120 h4"/><circle cx="126" cy="126" r="7" fill="currentColor" stroke="none"/>' +
       '<path d="M132 118 h30"/>'),
-
     squat: wrap(head(160, 60) +
       '<path d="M160 73 L160 116"/><path d="M160 116 L134 120 L134 150 M160 116 L186 120 L186 150"/>' +
       '<path d="M160 80 L138 86 M160 82 L182 88"/>'),
-
     bridge: wrap(head(96, 148) +
       '<path d="M110 148 L172 114 L198 122 L198 150"/>' +
       '<path d="M120 150 L166 120 M132 150 L172 124"/>'),
-
     seated: wrap(head(150, 84) +
       '<path d="M150 97 L150 140"/><path d="M150 140 L214 146 L244 146"/>' +
       '<path d="M150 104 L196 122 L214 130"/>'),
-
     kneel: wrap(head(116, 104) +
       '<path d="M126 108 Q160 92 194 110"/><path d="M126 108 L122 142 M126 142 h10"/>' +
       '<path d="M194 110 L200 142 M194 142 h10"/><path d="M126 108 Q160 122 194 110"/>'),
-
     stretchStand: wrap(head(160, 46) +
       '<path d="M160 59 V112"/><path d="M160 112 L156 152"/>' +
       '<path d="M160 112 Q182 128 168 118 Q160 116 164 100"/><path d="M164 96 L178 124"/>' +
       '<path d="M156 68 L138 48"/>'),
-
     gluteKick: wrap(head(114, 108) +
       '<path d="M124 112 Q158 98 188 116"/><path d="M124 112 L120 142 M124 142 h10"/>' +
       '<path d="M188 116 L226 100"/><path d="M188 116 L190 138 M188 138 h9"/>'),
-
     calf: wrap(head(150, 46) +
       '<path d="M150 59 V116"/><path d="M150 116 L146 148 M150 116 L158 148"/>' +
       '<path d="M144 152 h6 M156 152 h6"/><path d="M150 70 L196 66"/><path d="M204 44 V116"/>')
   };
-
   const illuSvg = (key) => ILLU[key] || ILLU.stretchStand;
 
   /* ==========================================================================
@@ -109,8 +119,8 @@
      ========================================================================== */
   const PROGRAM = {
     push: {
-      label: 'دفع', emoji: '💗', accent: 'push',
-      title: 'يوم الدفع', sub: 'صدر · أكتاف · ترايسبس 💗',
+      label: 'دفع', accent: 'push',
+      title: 'يوم الدفع', sub: 'صدر · أكتاف · ترايسبس',
       warmup: [
         { ar: 'فتح الصدر وإدخال الإبرة', en: 'Thread the Needle', reps: '٥ لكل جهة', illu: 'kneel', gif: NML + '2021/03/Thread-the-needle.gif',
           cues: ['ابدئي على أربع وظهرك مستوي', 'مرّري يدك تحت صدرك ولفّي الجذع', 'رجّعيها وافتحي صدرك للسقف بهدوء'] },
@@ -141,12 +151,12 @@
         { ar: 'إطالة الكتف والترايسبس', en: 'Shoulder & Triceps Stretch', reps: '٣٠–٤٥ ث', illu: 'stretchStand', gif: NML + '2025/12/shoulder-and-tricep-stretch-Cool-Down-Stretches.gif',
           cues: ['مرّري ذراعك على صدرك واسحبيها', 'بدّلي للترايسبس خلف راسك', 'ثبّتي بدون ألم وكرري للجهتين'] }
       ],
-      tip: 'إطالة الصدر على إطار الباب — حطي ساعدك على الإطار واتقدّمي خطوة، بتحسّين شدّ حلو بالصدر 💗'
+      tip: 'إطالة الصدر على إطار الباب — حطي ساعدك على الإطار واتقدّمي خطوة، بتحسّين شدّ حلو بالصدر.'
     },
 
     pull: {
-      label: 'سحب', emoji: '💜', accent: 'pull',
-      title: 'يوم السحب', sub: 'ظهر · كتف خلفي · بايسبس 💜',
+      label: 'سحب', accent: 'pull',
+      title: 'يوم السحب', sub: 'ظهر · كتف خلفي · بايسبس',
       warmup: [
         { ar: 'القطة والبقرة', en: 'Cat-Cow', reps: '×٨–١٠', illu: 'kneel', gif: NML + '2025/12/cat-cow-stretch-Cool-Down-Stretches.gif',
           cues: ['على أربع، بدّلي بين تقويس وتحديب', 'تحرّكي من فقرة لفقرة بهدوء', 'تنفّسي مع كل حركة'] },
@@ -177,12 +187,12 @@
         { ar: 'إطالة الرقبة والترابيس', en: 'Trap & Neck Stretch', reps: '٣٠–٤٥ ث', illu: 'stretchStand', gif: NML + '2021/03/trap-stretch.gif',
           cues: ['ميّلي راسك لجهة كتفك', 'يد خفيفة فوق للشدّ البسيط', 'بلطف للجهتين بدون شدّ قوي'] }
       ],
-      tip: 'إطالة البايسبس على الحائط — افردي ذراعك على الجدار خلفك ولفّي جسمك بعكسها شوي 💜'
+      tip: 'إطالة البايسبس على الحائط — افردي ذراعك على الجدار خلفك ولفّي جسمك بعكسها شوي.'
     },
 
     legs: {
-      label: 'أرجل', emoji: '🧡', accent: 'legs',
-      title: 'يوم الأرجل', sub: 'تركيز مؤخرة 🍑',
+      label: 'أرجل', accent: 'legs',
+      title: 'يوم الأرجل', sub: 'تركيز المؤخرة',
       warmup: [
         { ar: 'صباح الخير', en: 'Good Mornings', reps: '×١٠', illu: 'hinge', gif: NML + '2025/09/1-good-morning.gif',
           cues: ['يدينك على صدرك أو خلف راسك', 'اهبطي بالورك للخلف وظهرك مستوي', 'ارجعي بعصر المؤخرة'] },
@@ -198,7 +208,7 @@
           cues: ['نفس حركة دفع الورك بوزن خفيف', 'ركّزي على دفع الكعب وعصر المؤخرة', 'تسخين مو إجهاد'] }
       ],
       exercises: [
-        { ar: 'دفع الورك', en: 'Hip Thrust', sets: 4, reps: '٨', muscle: 'مؤخرة 🍑', illu: 'bridge', gif: FP + '2021/02/Barbell-Hip-Thrust.gif',
+        { ar: 'دفع الورك', en: 'Hip Thrust', sets: 4, reps: '٨', muscle: 'مؤخرة', illu: 'bridge', gif: FP + '2021/02/Barbell-Hip-Thrust.gif',
           cues: ['لوّحي ظهرك على الكرسي وذقنك مدسوس', 'ادفعي بالكعب وارفعي الورك', 'اعصري المؤخرة ثانية بالأعلى ولا تقوّسين أسفل ظهرك'] },
         { ar: 'رفعة رومانية', en: 'Romanian Deadlift', sets: 4, reps: '٨', muscle: 'خلفية · مؤخرة', illu: 'hinge', gif: FP + '2021/02/Barbell-Romanian-Deadlift.gif',
           cues: ['ادفعي وركك للخلف وظهرك مستوي', 'نزّلي الوزن قريب من رجلك', 'حسّي شدّ الخلفية وارجعي بعصر المؤخرة'] },
@@ -208,7 +218,7 @@
           cues: ['رجلك الخلفية على الكرسي', 'انزلي عمودي وركبتك الأمامية فوق كعبك', 'ادفعي بكعب رجلك الأمامية'] },
         { ar: 'مبعدات الورك', en: 'Hip Abductor', sets: 3, reps: '١٥', muscle: 'مبعدات · مؤخرة', illu: 'seated', gif: FP + '2021/02/HiP-ABDUCTION-MACHINE.gif',
           cues: ['اجلسي بظهر مسنود', 'افتحي رجليك للجانب بضغط', 'ارجعي ببطء وحسّي جانب المؤخرة'] },
-        { ar: 'ركلة خلفية كيبل', en: 'Cable Kickback', sets: 3, reps: '١٥ لكل رجل', muscle: 'مؤخرة 🍑', illu: 'gluteKick', gif: FP + '2021/06/Glute-Kickback-Machine.gif',
+        { ar: 'ركلة خلفية كيبل', en: 'Cable Kickback', sets: 3, reps: '١٥ لكل رجل', muscle: 'مؤخرة', illu: 'gluteKick', gif: FP + '2021/06/Glute-Kickback-Machine.gif',
           cues: ['ميلي شوي للأمام وثبّتي جذعك', 'اركلي رجلك للخلف بالكعب', 'اعصري المؤخرة بالنهاية بدون تقويس الظهر'] },
         { ar: 'رفع السمانة واقفة', en: 'Standing Calf Raise', sets: 4, reps: '١٥', muscle: 'سمانة', illu: 'calf', gif: FP + '2021/06/Standing-Calf-Raise.gif',
           cues: ['اطلعي على أطراف أصابعك بالكامل', 'ثبّتي ثانية بالأعلى', 'نزّلي ببطء لين تحسّين شدّ السمانة'] }
@@ -223,7 +233,7 @@
         { ar: 'السمانة على الحائط', en: 'Wall Calf', reps: '٣٠–٤٥ ث', illu: 'calf', gif: NML + '2025/12/standing-calf-stretch-Cool-Down-Stretches.gif',
           cues: ['يدينك على الحائط ورجل للخلف', 'كعبك بالأرض وركبتك مفرودة', 'اتقدّمي شوي لين تحسّين الشدّ'] }
       ],
-      tip: 'وضعية الرقم ٤ (Figure-4) — نامي على ظهرك، حطي كاحلك على ركبة الرجل الثانية واسحبيها لصدرك. ٣٠–٤٥ ث لكل جهة 🍑'
+      tip: 'وضعية الرقم ٤ (Figure-4) — نامي على ظهرك، حطي كاحلك على ركبة الرجل الثانية واسحبيها لصدرك. ٣٠–٤٥ ث لكل جهة.'
     }
   };
 
@@ -233,15 +243,12 @@
      Persistent set-tracker state
      ========================================================================== */
   const STORE_KEY = 'booboo-fit:v1';
-
   const loadState = () => {
     try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }
     catch (_) { return {}; }
   };
   let STATE = loadState();
-  const saveState = () => {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify(STATE)); } catch (_) {}
-  };
+  const saveState = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(STATE)); } catch (_) {} };
 
   const daySets = (day, i, total) => {
     STATE[day] = STATE[day] || {};
@@ -253,11 +260,7 @@
   const dayTotals = (day) => {
     const ex = PROGRAM[day].exercises;
     let total = 0, done = 0;
-    ex.forEach((e, i) => {
-      total += e.sets;
-      const s = daySets(day, i, e.sets);
-      done += s.filter(Boolean).length;
-    });
+    ex.forEach((e, i) => { total += e.sets; done += daySets(day, i, e.sets).filter(Boolean).length; });
     return { total, done };
   };
 
@@ -278,19 +281,18 @@
       </div>`;
   }
 
-  function cuesHTML(cues) {
-    return `<ul class="cues">${cues.map((c) => `<li>${c}</li>`).join('')}</ul>`;
-  }
+  const cuesHTML = (cues) => `<ul class="cues">${cues.map((c) => `<li>${c}</li>`).join('')}</ul>`;
 
   // type: 'warmup' | 'exercise' | 'stretch'
   function cardHTML(item, day, type, index) {
+    const p = PHASE[type];
     let chips;
     if (type === 'exercise') {
       chips = `<span class="chip chip--reps">${toAr(item.sets)} × ${item.reps}</span>
                <span class="chip chip--muscle">${item.muscle}</span>`;
     } else {
-      const isStretch = type === 'stretch';
-      chips = `<span class="chip ${isStretch ? 'chip--time' : 'chip--reps'}">${item.reps}</span>`;
+      const cls = type === 'stretch' ? 'chip--time' : 'chip--reps';
+      chips = `<span class="chip ${cls}">${item.reps}</span>`;
     }
 
     let tracker = '';
@@ -298,7 +300,7 @@
       const sets = daySets(day, index, item.sets);
       const dots = sets.map((done, s) =>
         `<button class="set-dot ${done ? 'is-done' : ''}" data-day="${day}" data-ex="${index}" data-set="${s}"
-                 type="button" aria-pressed="${done}" aria-label="مجموعة ${toAr(s + 1)}">${done ? '💗' : ''}</button>`
+                 type="button" aria-pressed="${done}" aria-label="مجموعة ${toAr(s + 1)}">${done ? icon('check') : ''}</button>`
       ).join('');
       tracker = `<div class="tracker">
           <div class="tracker__label">مجموعاتك — دقّي عليها لما تخلّصينها</div>
@@ -306,25 +308,33 @@
         </div>`;
     }
 
-    return `<article class="card">
+    return `<article class="card card--${type} reveal">
+        <span class="phase-tag phase-tag--${type}">${icon(p.icon)}<span>${p.tag}</span></span>
         ${mediaHTML(item)}
         <h3 class="card__title">${item.ar}</h3>
         <div class="card__title-en">${item.en}</div>
         <div class="chips">${chips}</div>
         ${cuesHTML(item.cues)}
-        <a class="watch-btn" href="${ytLink(item.en)}" target="_blank" rel="noopener">▶ شاهدي المقطع</a>
+        <a class="watch-btn" href="${ytLink(item.en)}" target="_blank" rel="noopener">${icon('play')}<span>شاهدي المقطع</span></a>
         ${tracker}
       </article>`;
   }
 
-  function phaseHTML(icon, text) {
-    return `<h2 class="phase"><span>${icon}</span><span>${text}</span><span class="phase__line"></span></h2>`;
+  function phaseHTML(type, count) {
+    const p = PHASE[type];
+    return `<div class="phase reveal">
+        <span class="phase__badge">${icon(p.icon)}</span>
+        <span class="phase__text">
+          <span class="phase__title">${p.head}</span>
+          <span class="phase__count">${toAr(count)} ${p.unit}</span>
+        </span>
+        <span class="phase__line"></span>
+      </div>`;
   }
 
   function viewHTML(day) {
     const d = PROGRAM[day];
     const { total } = dayTotals(day);
-
     const warm = d.warmup.map((it, i) => cardHTML(it, day, 'warmup', i)).join('');
     const ex = d.exercises.map((it, i) => cardHTML(it, day, 'exercise', i)).join('');
     const str = d.stretches.map((it, i) => cardHTML(it, day, 'stretch', i)).join('');
@@ -332,28 +342,26 @@
     return `
       <section class="view ${day === 'push' ? 'is-active' : ''}" id="view-${day}" role="tabpanel">
         <div class="day-head">
-          <h2 class="day-head__title">${d.title} ${d.emoji}</h2>
+          <h2 class="day-head__title">${d.title}</h2>
           <p class="day-head__sub">${d.sub}</p>
         </div>
 
         <div class="day-progress">
           <div class="day-progress__row">
             <span class="day-progress__label" id="prog-label-${day}">خلّصتي ٠ من ${toAr(total)} مجموعة</span>
-            <button class="day-progress__reset" data-reset="${day}" type="button">بدء أسبوع جديد 🔄</button>
+            <button class="day-progress__reset" data-reset="${day}" type="button">${icon('reset')}<span>أسبوع جديد</span></button>
           </div>
           <div class="day-progress__bar"><div class="day-progress__fill" id="prog-fill-${day}"></div></div>
         </div>
 
-        ${phaseHTML('🤸‍♀️', 'الإحماء قبل التمرين')}
+        ${phaseHTML('warmup', d.warmup.length)}
         ${warm}
-
-        ${phaseHTML('💪', 'التمارين')}
+        ${phaseHTML('exercise', d.exercises.length)}
         ${ex}
-
-        ${phaseHTML('🧘‍♀️', 'الإطالة بعد التمرين')}
+        ${phaseHTML('stretch', d.stretches.length)}
         ${str}
 
-        <div class="tip"><span class="tip__icon">💡</span><span><strong>نصيحة: </strong>${d.tip}</span></div>
+        <div class="tip"><span class="tip__icon">${icon('bulb')}</span><span><strong>نصيحة: </strong>${d.tip}</span></div>
 
         <p class="attr">الصور المتحركة من
           <a href="https://www.nourishmovelove.com" target="_blank" rel="noopener">Nourish Move Love</a>
@@ -362,7 +370,7 @@
 
         <footer class="day-footer">
           <div class="day-footer__big">Good Luck Booboo</div>
-          <div class="day-footer__note">مسوّي بحب خصيصًا لك 💌</div>
+          <div class="day-footer__note">مسوّي بحب خصيصًا لك ${icon('heart', 'heart-ic')}</div>
         </footer>
       </section>`;
   }
@@ -373,11 +381,11 @@
     const label = document.getElementById(`prog-label-${day}`);
     if (fill) fill.style.width = (total ? (done / total) * 100 : 0) + '%';
     if (label) {
-      label.textContent = done >= total && total > 0
-        ? `برافو! خلّصتي كل الـ ${toAr(total)} مجموعة 🎉`
+      label.innerHTML = done >= total && total > 0
+        ? `${icon('check', 'inline-ic')} خلّصتي كل الـ ${toAr(total)} مجموعة`
         : `خلّصتي ${toAr(done)} من ${toAr(total)} مجموعة`;
     }
-    if (celebrateIfDone && total > 0 && done === total) celebrate('برافو يا بطلة! 💖');
+    if (celebrateIfDone && total > 0 && done === total) celebrate('برافو يا بطلة');
   }
 
   /* ==========================================================================
@@ -387,6 +395,17 @@
   views.innerHTML = DAYS.map(viewHTML).join('');
   DAYS.forEach((d) => updateProgress(d, false));
 
+  /* ---------- reveal-on-scroll (emphasises moving between phases) ---------- */
+  let revealObserver = null;
+  if ('IntersectionObserver' in window) {
+    revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); revealObserver.unobserve(e.target); } });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.reveal').forEach((n) => revealObserver.observe(n));
+  } else {
+    document.querySelectorAll('.reveal').forEach((n) => n.classList.add('in'));
+  }
+
   /* ---------- set-dot tracking (event delegation) ---------- */
   views.addEventListener('click', (e) => {
     const dot = e.target.closest('.set-dot');
@@ -394,11 +413,12 @@
       const { day, ex, set } = dot.dataset;
       const item = PROGRAM[day].exercises[+ex];
       const sets = daySets(day, +ex, item.sets);
-      const wasComplete = dayTotals(day).done === dayTotals(day).total;
+      const t = dayTotals(day);
+      const wasComplete = t.done === t.total;
       sets[+set] = !sets[+set];
       saveState();
       dot.classList.toggle('is-done', sets[+set]);
-      dot.textContent = sets[+set] ? '💗' : '';
+      dot.innerHTML = sets[+set] ? icon('check') : '';
       dot.setAttribute('aria-pressed', sets[+set]);
       updateProgress(day, !wasComplete);
       return;
@@ -408,12 +428,14 @@
       const day = reset.dataset.reset;
       STATE[day] = {};
       saveState();
-      // re-render just this view to clear dots
       const old = document.getElementById(`view-${day}`);
       const fresh = el(viewHTML(day));
-      if (!old.classList.contains('is-active')) fresh.classList.remove('is-active');
-      else fresh.classList.add('is-active');
+      fresh.classList.toggle('is-active', old.classList.contains('is-active'));
       old.replaceWith(fresh);
+      // revealed immediately (already on screen) + rebind observer for offscreen
+      fresh.querySelectorAll('.reveal').forEach((n) => {
+        if (revealObserver) revealObserver.observe(n); else n.classList.add('in');
+      });
       updateProgress(day, false);
     }
   });
@@ -432,9 +454,7 @@
       t.classList.toggle('is-active', on);
       t.setAttribute('aria-selected', on);
     });
-    DAYS.forEach((d) => {
-      document.getElementById(`view-${d}`).classList.toggle('is-active', d === day);
-    });
+    DAYS.forEach((d) => document.getElementById(`view-${d}`).classList.toggle('is-active', d === day));
     if (themeMeta) themeMeta.setAttribute('content', DAY_THEME[day] || '#FFDDEC');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -443,25 +463,20 @@
   /* ==========================================================================
      Rest timer
      ========================================================================== */
-  const fab = document.getElementById('timerFab');
   const sheet = document.getElementById('timerSheet');
   const overlay = document.getElementById('sheetOverlay');
-  const closeBtn = document.getElementById('sheetClose');
   const display = document.getElementById('timerDisplay');
   const toggleBtn = document.getElementById('timerToggle');
   const resetBtn = document.getElementById('timerReset');
   const presets = Array.from(document.querySelectorAll('.timer__preset'));
 
-  let selected = 90;      // preset seconds
-  let remaining = 90;     // seconds left
-  let ticking = null;     // interval id
-  let audioCtx = null;
+  let selected = 90, remaining = 90, ticking = null, audioCtx = null;
 
-  const fmt = (s) => {
-    const m = Math.floor(s / 60), sec = s % 60;
-    return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-  };
+  const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
   const renderTimer = () => { display.textContent = fmt(remaining); };
+  const setToggle = (running) => {
+    toggleBtn.innerHTML = running ? `${icon('pause')}<span>إيقاف</span>` : `${icon('play')}<span>ابدئي</span>`;
+  };
 
   function beep() {
     try {
@@ -471,25 +486,19 @@
         const osc = audioCtx.createOscillator();
         const g = audioCtx.createGain();
         osc.type = 'sine';
-        osc.frequency.value = 660 + i * 220;   // soft rising chime
+        osc.frequency.value = 660 + i * 220;
         g.gain.setValueAtTime(0.0001, now + t);
         g.gain.exponentialRampToValueAtTime(0.25, now + t + 0.03);
         g.gain.exponentialRampToValueAtTime(0.0001, now + t + 0.2);
         osc.connect(g).connect(audioCtx.destination);
-        osc.start(now + t);
-        osc.stop(now + t + 0.22);
+        osc.start(now + t); osc.stop(now + t + 0.22);
       });
     } catch (_) {}
   }
-
-  function stopTimer() {
-    if (ticking) { clearInterval(ticking); ticking = null; }
-    toggleBtn.textContent = 'ابدئي ▶';
-  }
+  function stopTimer() { if (ticking) { clearInterval(ticking); ticking = null; } setToggle(false); }
   function finishTimer() {
     stopTimer();
-    remaining = selected;
-    renderTimer();
+    remaining = selected; renderTimer();
     display.classList.add('is-done');
     setTimeout(() => display.classList.remove('is-done'), 1900);
     if (navigator.vibrate) navigator.vibrate([120, 60, 120, 60, 240]);
@@ -497,48 +506,42 @@
   }
   function startTimer() {
     if (remaining <= 0) remaining = selected;
-    toggleBtn.textContent = 'إيقاف ⏸';
-    // resume audio context on the gesture so the finish chime is allowed to play
+    setToggle(true);
     try { if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); } catch (_) {}
-    ticking = setInterval(() => {
-      remaining -= 1;
-      renderTimer();
-      if (remaining <= 0) finishTimer();
-    }, 1000);
+    ticking = setInterval(() => { remaining -= 1; renderTimer(); if (remaining <= 0) finishTimer(); }, 1000);
   }
 
   presets.forEach((p) => p.addEventListener('click', () => {
     presets.forEach((x) => x.classList.remove('is-active'));
     p.classList.add('is-active');
-    selected = +p.dataset.seconds;
-    stopTimer();
-    remaining = selected;
-    renderTimer();
+    selected = +p.dataset.seconds; stopTimer(); remaining = selected; renderTimer();
   }));
-
   toggleBtn.addEventListener('click', () => { ticking ? stopTimer() : startTimer(); });
   resetBtn.addEventListener('click', () => { stopTimer(); remaining = selected; renderTimer(); });
 
-  function openSheet() { sheet.hidden = false; overlay.hidden = false; }
-  function closeSheet() { sheet.hidden = true; overlay.hidden = true; }
-  fab.addEventListener('click', openSheet);
+  const openSheet = () => { sheet.hidden = false; overlay.hidden = false; };
+  const closeSheet = () => { sheet.hidden = true; overlay.hidden = true; };
+  document.getElementById('timerFab').addEventListener('click', openSheet);
   overlay.addEventListener('click', closeSheet);
-  closeBtn.addEventListener('click', closeSheet);
-  renderTimer();
+  document.getElementById('sheetClose').addEventListener('click', closeSheet);
+  setToggle(false); renderTimer();
 
   /* ==========================================================================
-     Celebration — falling hearts + toast
+     Celebration — falling confetti petals + toast (no emoji)
      ========================================================================== */
   const celebrateLayer = document.getElementById('celebrate');
-  const EMOJI = ['💗', '💖', '🎀', '✨', '💜', '🧡', '🌸', '💕'];
+  const CONFETTI_COLORS = ['#E85D9E', '#9B7FD4', '#F4846C', '#F6C25B', '#FFD9EA', '#EBE2FA'];
 
   function celebrate(message) {
-    for (let i = 0; i < 34; i++) {
+    for (let i = 0; i < 40; i++) {
       const s = document.createElement('span');
       s.className = 'confetti';
-      s.textContent = EMOJI[Math.floor(Math.random() * EMOJI.length)];
+      const sz = 8 + Math.random() * 8;
+      s.style.width = sz + 'px';
+      s.style.height = sz + 'px';
       s.style.left = Math.random() * 100 + 'vw';
-      s.style.fontSize = 16 + Math.random() * 18 + 'px';
+      s.style.background = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+      s.style.borderRadius = Math.random() < 0.5 ? '50%' : '2px';
       const dur = 2.4 + Math.random() * 1.8;
       s.style.animationDuration = dur + 's';
       s.style.animationDelay = Math.random() * 0.5 + 's';
@@ -546,7 +549,7 @@
       setTimeout(() => s.remove(), (dur + 0.6) * 1000);
     }
     if (message) {
-      const t = el(`<div class="toast">${message}</div>`);
+      const t = el(`<div class="toast"><span class="toast__ic">${icon('check')}</span><span>${message}</span></div>`);
       document.body.appendChild(t);
       requestAnimationFrame(() => t.classList.add('is-show'));
       setTimeout(() => t.remove(), 2400);
@@ -557,8 +560,6 @@
      Service worker
      ========================================================================== */
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
-    });
+    window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => {}); });
   }
 })();

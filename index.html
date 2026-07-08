@@ -34,23 +34,35 @@
 
   <!-- ✨ Hero -->
   <header class="hero">
-    <div class="hero__sparkles" aria-hidden="true">🎀 ✨ 💗 ✨ 🎀</div>
-    <h1 class="hero__title">بوبو فت 🎀</h1>
+    <div class="hero__ornament" aria-hidden="true"></div>
+    <h1 class="hero__title">بوبو فت</h1>
     <p class="hero__subtitle">برنامجك ٣ أيام — دفع · سحب · أرجل</p>
 
     <section class="golden-rule" aria-label="القاعدة الذهبية">
-      <h2 class="golden-rule__head">✨ القاعدة الذهبية ✨</h2>
+      <h2 class="golden-rule__head">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.2l5.9-.9z"/></svg>
+        القاعدة الذهبية
+      </h2>
       <ul class="golden-rule__list">
         <li>
-          <span class="golden-rule__label">🔥 قبل التمرين</span>
+          <span class="golden-rule__label">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
+            قبل التمرين
+          </span>
           إحماء حركي ٢–٣ دقايق + ٢–٤ مجموعات خفيفة لأول تمرين مركّب.
         </li>
         <li>
-          <span class="golden-rule__label">🧘‍♀️ بعد التمرين</span>
+          <span class="golden-rule__label">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.4 5.1-6"/></svg>
+            بعد التمرين
+          </span>
           إطالات ثابتة ٣٠–٤٥ ثانية لكل وضعية.
         </li>
         <li>
-          <span class="golden-rule__label">📈 قاعدة التدرّج</span>
+          <span class="golden-rule__label">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg>
+            قاعدة التدرّج
+          </span>
           إذا خلّصتي كل العدات بأداء صحيح وباقي ١–٢ عدة بالخزان، زيدي الوزن ٢.٥–٥٪ الجلسة الجاية.
         </li>
       </ul>
@@ -59,26 +71,29 @@
 
   <!-- 💗 Sticky tabs -->
   <nav class="tabs" role="tablist" aria-label="أيام البرنامج">
-    <button class="tab is-active" role="tab" aria-selected="true" data-tab="push">دفع 💗</button>
-    <button class="tab" role="tab" aria-selected="false" data-tab="pull">سحب 💜</button>
-    <button class="tab" role="tab" aria-selected="false" data-tab="legs">أرجل 🧡</button>
+    <button class="tab is-active" role="tab" aria-selected="true" data-tab="push"><span class="tab__dot"></span>دفع</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="pull"><span class="tab__dot"></span>سحب</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="legs"><span class="tab__dot"></span>أرجل</button>
   </nav>
 
   <!-- Day views are rendered here by app.js -->
   <main id="views"></main>
 
-  <!-- ⏱️ Rest-timer floating button -->
+  <!-- Rest-timer floating button -->
   <button id="timerFab" class="timer-fab" type="button" aria-label="مؤقّت الراحة">
-    <span class="timer-fab__icon">⏱️</span>
+    <span class="timer-fab__icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3.2 2"/></svg></span>
     <span class="timer-fab__label">راحة</span>
   </button>
 
-  <!-- ⏱️ Rest-timer bottom sheet -->
+  <!-- Rest-timer bottom sheet -->
   <div id="sheetOverlay" class="sheet-overlay" hidden></div>
   <section id="timerSheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
     <div class="sheet__grab" aria-hidden="true"></div>
     <div class="sheet__head">
-      <h2 id="sheetTitle">مؤقّت الراحة ⏱️</h2>
+      <h2 id="sheetTitle">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3.2 2"/></svg>
+        مؤقّت الراحة
+      </h2>
       <button id="sheetClose" class="sheet__close" type="button" aria-label="إغلاق">✕</button>
     </div>
 
@@ -90,10 +105,13 @@
         <button class="timer__preset" data-seconds="120" type="button">١٢٠ ث</button>
       </div>
       <div class="timer__controls">
-        <button id="timerToggle" class="btn btn--primary" type="button">ابدئي ▶</button>
-        <button id="timerReset" class="btn btn--ghost" type="button">صفّري 🔄</button>
+        <button id="timerToggle" class="btn btn--primary" type="button"></button>
+        <button id="timerReset" class="btn btn--ghost" type="button">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4.5V9h-4.5"/></svg>
+          <span>صفّري</span>
+        </button>
       </div>
-      <p class="timer__hint">اهتزاز ونغمة لطيفة أول ما يخلص العدّاد 💗</p>
+      <p class="timer__hint">اهتزاز ونغمة لطيفة أول ما يخلص العدّاد</p>
     </div>
   </section>
 
