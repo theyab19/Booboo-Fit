@@ -352,13 +352,15 @@ img { display: block; max-width: 100%; }
 .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.5s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1); }
 .reveal.in { opacity: 1; transform: none; }
 
-/* Media 16:9 with SVG fallback behind the GIF */
+/* Media frame with SVG fallback behind the GIF.
+   4:3 + object-fit:contain shows the whole figure (source GIFs are square or
+   landscape) so nothing gets cropped on mobile. */
 .media {
   position: relative;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 4 / 3;
   border-radius: var(--radius-sm);
   overflow: hidden;
-  background: linear-gradient(135deg, var(--day-mist), var(--day-soft));
+  background: linear-gradient(135deg, #ffffff, var(--day-mist));
 }
 .media__illu {
   position: absolute;
@@ -374,7 +376,7 @@ img { display: block; max-width: 100%; }
   z-index: 2;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   background: transparent;
 }
 .media__badge {
