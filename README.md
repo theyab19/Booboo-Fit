@@ -1,16 +1,17 @@
 # بوبو فت — Booboo Fit 🎀
 
-A cute, girly **Progressive Web App**: a 3-day **Push / Pull / Legs** workout guide in
-Arabic (RTL, Gulf dialect, feminine grammar). Built with **vanilla HTML / CSS / JS** — no
-frameworks, no build step. Made to be hosted on **GitHub Pages** and installed on an
-iPhone home screen. 💗
+A cute, girly **Progressive Web App**: a **4-day** workout guide (upper-chest · front-legs ·
+back · glutes) in Arabic (RTL, Gulf dialect, feminine grammar). The split emphasises a
+lighter/higher-rep upper body and a higher-volume, glute-focused lower body. Built with
+**vanilla HTML / CSS / JS** — no frameworks, no build step. Made to be hosted on
+**GitHub Pages** and installed on an iPhone home screen.
 
 ---
 
 ## ✨ Features
 
-- **3 day tabs** — دفع 💗 · سحب 💜 · أرجل 🧡 — switch views with no page reload.
-- Each day has **3 phases**: 🤸‍♀️ إحماء → 💪 تمارين → 🧘‍♀️ إطالة.
+- **4 day tabs** — صدر · رِجل أمامي · ظهر · رِجل خلفي — switch views with no page reload.
+- Each day has **3 phases**: إحماء → تمارين → إطالة, each card tagged with its phase.
 - **Exercise cards** with animated GIF demos; every card has an **inline SVG stick-figure
   fallback** that shows automatically if the GIF fails or you're offline (never a broken image).
 - **Set tracker** — tap the circles as you finish each set; progress is saved in

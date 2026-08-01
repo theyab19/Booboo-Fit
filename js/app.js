@@ -1,6 +1,7 @@
 /* ==========================================================================
    بوبو فت — Booboo Fit · app logic
    Vanilla JS · no build step · works offline (shell + SVG illustrations)
+   4-day split: علوي صدر · سفلي أمامي · ظهر · سفلي خلفي (قلوتز)
    ========================================================================== */
 (function () {
   'use strict';
@@ -35,7 +36,6 @@
     `<svg class="ic${cls ? ' ' + cls : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" ` +
     `stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON_PATHS[name] || ''}</svg>`;
 
-  // Phase metadata: label + icon per phase type
   const PHASE = {
     warmup:   { tag: 'إحماء',  icon: 'pulse',    head: 'الإحماء قبل التمرين', unit: 'حركات' },
     exercise: { tag: 'تمرين',  icon: 'dumbbell', head: 'التمارين',            unit: 'تمارين' },
@@ -44,7 +44,6 @@
 
   /* ==========================================================================
      SVG stick-figure illustrations (shown when a GIF fails / offline)
-     One recognizable archetype per movement pattern. Uses currentColor.
      ========================================================================== */
   const wrap = (inner) => `
     <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
@@ -115,12 +114,15 @@
   const FP = 'https://fitnessprogramer.com/wp-content/uploads/';
 
   /* ==========================================================================
-     Program content (numbers exactly as specified)
+     Program content — 4-day split.
+     Focus: lighter/higher-rep upper body (toning), higher-volume lower body
+     with a glute emphasis on day 4 (growth / progressive overload).
      ========================================================================== */
   const PROGRAM = {
-    push: {
-      label: 'دفع', accent: 'push',
-      title: 'يوم الدفع', sub: 'صدر · أكتاف · ترايسبس',
+    /* ---------- 1) علوي · صدر ---------- */
+    chest: {
+      label: 'صدر', accent: 'chest',
+      title: 'اليوم العلوي — صدر', sub: 'صدر · أكتاف · ترايسبس',
       warmup: [
         { ar: 'فتح الصدر وإدخال الإبرة', en: 'Thread the Needle', reps: '٥ لكل جهة', illu: 'kneel', gif: NML + '2021/03/Thread-the-needle.gif',
           cues: ['ابدئي على أربع وظهرك مستوي', 'مرّري يدك تحت صدرك ولفّي الجذع', 'رجّعيها وافتحي صدرك للسقف بهدوء'] },
@@ -132,18 +134,18 @@
           cues: ['١٠ ضغطات على الحائط تفتح صدرك', 'بعدها مجموعتين خفيفتين من أول تمرين', 'خفيفة عشان تسخّني مو تتعبي'] }
       ],
       exercises: [
-        { ar: 'ضغط صدر', en: 'Chest Press', sets: 4, reps: '٦–٨', muscle: 'صدر', illu: 'press', gif: FP + '2021/02/Chest-Press-Machine.gif',
+        { ar: 'ضغط صدر', en: 'Chest Press', sets: 3, reps: '١٠–١٢', muscle: 'صدر', illu: 'press', gif: FP + '2021/02/Chest-Press-Machine.gif',
           cues: ['ظهرك مسنود ولوحي كتفك مضمومين', 'ادفعي للأمام وعصري صدرك', 'نزّلي بتحكّم لين تحسّين شدّ بالصدر'] },
-        { ar: 'ضغط صدر مائل', en: 'Incline Chest Press', sets: 3, reps: '٨–١٠', muscle: 'صدر علوي', illu: 'press', gif: FP + '2021/02/Incline-Dumbbell-Press.gif',
+        { ar: 'ضغط صدر مائل', en: 'Incline Chest Press', sets: 3, reps: '١٠–١٢', muscle: 'صدر علوي', illu: 'press', gif: FP + '2021/02/Incline-Dumbbell-Press.gif',
           cues: ['الكرسي مائل خفيف تقريبًا ٣٠ درجة', 'ادفعي لفوق بمسار قطري بسيط', 'لا تفرّطين بالنزول عشان كتفك'] },
-        { ar: 'ضغط أكتاف', en: 'Shoulder Press', sets: 3, reps: '٨–١٠', muscle: 'أكتاف', illu: 'overhead', gif: FP + '2021/02/Dumbbell-Shoulder-Press.gif',
+        { ar: 'تفتيح صدر (بيك ديك)', en: 'Pec Deck Fly', sets: 3, reps: '١٢–١٥', muscle: 'صدر', illu: 'raise', gif: FP + '2021/02/Pec-Deck-Fly.gif',
+          cues: ['ثبّتي مرفقيك بانحناء بسيط', 'قرّبي يديك بعصر الصدر', 'ارجعي ببطء لين تحسّين شدّ الصدر'] },
+        { ar: 'ضغط أكتاف', en: 'Shoulder Press', sets: 3, reps: '١٠–١٢', muscle: 'أكتاف', illu: 'overhead', gif: FP + '2021/02/Dumbbell-Shoulder-Press.gif',
           cues: ['ثبّتي بطنك ولا تقوّسين ظهرك', 'ادفعي فوق لين يستوي ذراعك', 'نزّلي لين يصير مرفقك بمستوى كتفك'] },
-        { ar: 'رفرفة جانبية كيبل', en: 'Cable Lateral Raise', sets: 4, reps: '١٢–١٥', muscle: 'كتف جانبي', illu: 'raise', gif: FP + '2021/02/Cable-Lateral-Raise.gif',
+        { ar: 'رفرفة جانبية كيبل', en: 'Cable Lateral Raise', sets: 3, reps: '١٥', muscle: 'كتف جانبي', illu: 'raise', gif: FP + '2021/02/Cable-Lateral-Raise.gif',
           cues: ['ارفعي من كتفك مو من رسغك', 'لا تعدّين مستوى الكتف', 'نزّلي ببطء وحسّي الشدّة بالجانب'] },
-        { ar: 'ترايسبس بالحبل', en: 'Rope Triceps Pushdown', sets: 3, reps: '١٠–١٢', muscle: 'ترايسبس', illu: 'pushdown', gif: FP + '2021/06/Rope-Pushdown.gif',
-          cues: ['ثبّتي مرفقيك على جنبك', 'مدّي لتحت وافتحي الحبل بالنهاية', 'رجّعي بتحكّم بدون ما يطلع مرفقك'] },
-        { ar: 'ترايسبس فوق الرأس', en: 'Overhead Triceps Extension', sets: 3, reps: '١٢', muscle: 'ترايسبس', illu: 'overhead', gif: FP + '2021/04/Cable-Rope-Overhead-Triceps-Extension.gif',
-          cues: ['مرفقك قريب من راسك وثابت', 'مدّي فوق لين يستوي ذراعك', 'نزّلي خلف راسك بإحساس شدّ'] }
+        { ar: 'ترايسبس بالحبل', en: 'Rope Triceps Pushdown', sets: 3, reps: '١٥', muscle: 'ترايسبس', illu: 'pushdown', gif: FP + '2021/06/Rope-Pushdown.gif',
+          cues: ['ثبّتي مرفقيك على جنبك', 'مدّي لتحت وافتحي الحبل بالنهاية', 'رجّعي بتحكّم بدون ما يطلع مرفقك'] }
       ],
       stretches: [
         { ar: 'الطاولة المعكوسة', en: 'Reverse Table Top', reps: '٣٠–٤٥ ث', illu: 'bridge', gif: NML + '2025/12/reverse-table-top-Cool-Down-Stretches.gif',
@@ -151,12 +153,52 @@
         { ar: 'إطالة الكتف والترايسبس', en: 'Shoulder & Triceps Stretch', reps: '٣٠–٤٥ ث', illu: 'stretchStand', gif: NML + '2025/12/shoulder-and-tricep-stretch-Cool-Down-Stretches.gif',
           cues: ['مرّري ذراعك على صدرك واسحبيها', 'بدّلي للترايسبس خلف راسك', 'ثبّتي بدون ألم وكرري للجهتين'] }
       ],
-      tip: 'إطالة الصدر على إطار الباب — حطي ساعدك على الإطار واتقدّمي خطوة، بتحسّين شدّ حلو بالصدر.'
+      tip: 'اليوم العلوي للتنشيف — وزن معتدل وعدات أعلى (١٠–١٥) وراحة أقصر. الهدف شدّ وثبات مو تضخيم.'
     },
 
-    pull: {
-      label: 'سحب', accent: 'pull',
-      title: 'يوم السحب', sub: 'ظهر · كتف خلفي · بايسبس',
+    /* ---------- 2) سفلي أمامي · كوادز ---------- */
+    quads: {
+      label: 'رِجل أمامي', accent: 'quads',
+      title: 'اليوم السفلي الأمامي — رِجل', sub: 'كوادز · مقدمة الفخذ',
+      warmup: [
+        { ar: 'سكوات بوزن الجسم', en: 'Bodyweight Squat', reps: '×١٠', illu: 'squat', gif: NML + '2025/09/4-squats.gif',
+          cues: ['قدمينك بعرض كتفك', 'اهبطي وصدرك مرفوع', 'ادفعي بالكعب للطلوع'] },
+        { ar: 'خطوة سبايدرمان', en: "World's Greatest Stretch", reps: '٥ لكل جهة', illu: 'squat', gif: NML + '2025/09/6-spiderman-step-ins.gif',
+          cues: ['اطلعي خطوة أمامية واسعة', 'نزّلي مرفقك جنب قدمك', 'لفّي جذعك وارفعي يدك للسقف'] },
+        { ar: 'جسر المؤخرة', en: 'Glute Bridge', reps: '×١٥', illu: 'bridge', gif: NML + '2025/09/9-glute-bridge.gif',
+          cues: ['نامي على ظهرك وركبك مثنية', 'ادفعي بكعبك وارفعي وركك', 'اعصري المؤخرة ثانية بالأعلى'] },
+        { ar: 'تدوير الورك ٩٠/٩٠', en: '90/90 Hip Rotations', reps: '٥ لكل جهة', illu: 'seated', gif: NML + '2025/09/8-hip-rotations.gif',
+          cues: ['اجلسي ورجليك بزاوية ٩٠', 'بدّلي ركبك من جهة لجهة', 'خلي الحركة من الورك بهدوء'] }
+      ],
+      exercises: [
+        { ar: 'سكوات دمبل', en: 'Dumbbell Squat', sets: 4, reps: '١٠', muscle: 'كوادز · أرجل', illu: 'squat', gif: FP + '2023/09/Dumbbell-Squat.gif',
+          cues: ['قدمينك بعرض كتفك وصدرك مرفوع', 'انزلي لين يصير فخذك موازي للأرض', 'ادفعي بالكعب وعصري رجولك للطلوع'] },
+        { ar: 'دفع أرجل', en: 'Leg Press', sets: 4, reps: '١٢', muscle: 'كوادز · مؤخرة', illu: 'squat', gif: FP + '2015/11/Leg-Press.gif',
+          cues: ['قدمينك بعرض كتفك ومنخفضة شوي للكوادز', 'انزلي لين تصير ركبتك ٩٠ درجة', 'ادفعي بالكعب ولا تقفلين ركبتك بالكامل'] },
+        { ar: 'سكوات بلغاري', en: 'Bulgarian Split Squat', sets: 3, reps: '١٠ لكل رجل', muscle: 'كوادز · مؤخرة', illu: 'squat', gif: FP + '2021/05/Dumbbell-Bulgarian-Split-Squat.gif',
+          cues: ['رجلك الخلفية على الكرسي', 'انزلي عمودي وركبتك الأمامية فوق كعبك', 'ادفعي بكعب رجلك الأمامية'] },
+        { ar: 'طعنات دمبل', en: 'Dumbbell Lunge', sets: 3, reps: '١٢ لكل رجل', muscle: 'كوادز · مؤخرة', illu: 'squat', gif: FP + '2021/02/Dumbbell-Lunge.gif',
+          cues: ['اطلعي خطوة واسعة للأمام', 'انزلي عمودي وركبتك الخلفية تقارب الأرض', 'ادفعي بكعب الرجل الأمامية وارجعي'] },
+        { ar: 'تمديد الركبة', en: 'Leg Extension', sets: 3, reps: '١٥', muscle: 'كوادز (مقدمة الفخذ)', illu: 'seated', gif: FP + '2021/02/LEG-EXTENSION.gif',
+          cues: ['اضبطي الوسادة فوق كاحلك', 'مدّي رجلك لين تستوي وعصري مقدمة الفخذ', 'نزّلي ببطء بدون ما تنطّين الوزن'] },
+        { ar: 'رفع السمانة واقفة', en: 'Standing Calf Raise', sets: 4, reps: '١٥', muscle: 'سمانة', illu: 'calf', gif: FP + '2021/06/Standing-Calf-Raise.gif',
+          cues: ['اطلعي على أطراف أصابعك بالكامل', 'ثبّتي ثانية بالأعلى', 'نزّلي ببطء لين تحسّين شدّ السمانة'] }
+      ],
+      stretches: [
+        { ar: 'الفخذ الأمامي واقفة', en: 'Standing Quad', reps: '٣٠–٤٥ ث', illu: 'stretchStand', gif: NML + '2025/12/quad-stretch-standing-Cool-Down-Stretches.gif',
+          cues: ['اسحبي قدمك لمؤخرتك', 'خلي ركبك قريبات من بعض', 'ثبّتي واتوازني للجهتين'] },
+        { ar: 'ثنيات الورك جاثية', en: 'Kneeling Hip Flexor', reps: '٣٠–٤٥ ث', illu: 'kneel', gif: NML + '2025/12/hip-flexor-stretch-Cool-Down-Stretches.gif',
+          cues: ['ركبة بالأرض والثانية أمامك', 'ادفعي وركك للأمام بلطف', 'حسّي شدّ مقدمة الفخذ'] },
+        { ar: 'السمانة على الحائط', en: 'Wall Calf', reps: '٣٠–٤٥ ث', illu: 'calf', gif: NML + '2025/12/standing-calf-stretch-Cool-Down-Stretches.gif',
+          cues: ['يدينك على الحائط ورجل للخلف', 'كعبك بالأرض وركبتك مفرودة', 'اتقدّمي شوي لين تحسّين الشدّ'] }
+      ],
+      tip: 'يوم بناء — ركّزي على زيادة الوزن بالتدرّج مع أداء نظيف. لو باقي ١–٢ عدة بالخزان بأداء صحيح، زيدي الوزن الجلسة الجاية.'
+    },
+
+    /* ---------- 3) ظهر ---------- */
+    back: {
+      label: 'ظهر', accent: 'back',
+      title: 'اليوم العلوي — ظهر', sub: 'ظهر · كتف خلفي · بايسبس',
       warmup: [
         { ar: 'القطة والبقرة', en: 'Cat-Cow', reps: '×٨–١٠', illu: 'kneel', gif: NML + '2025/12/cat-cow-stretch-Cool-Down-Stretches.gif',
           cues: ['على أربع، بدّلي بين تقويس وتحديب', 'تحرّكي من فقرة لفقرة بهدوء', 'تنفّسي مع كل حركة'] },
@@ -166,15 +208,15 @@
           cues: ['اجلسي وباطن قدميك مع بعض', 'مرّة بظهر مقوّس ومرّة ممدود', 'ادفعي ركبك للأرض بلطف'] }
       ],
       exercises: [
-        { ar: 'سحب علوي', en: 'Lat Pulldown', sets: 4, reps: '٨–١٠', muscle: 'ظهر · لاتس', illu: 'pulldown', gif: FP + '2021/02/Lat-Pulldown.gif',
+        { ar: 'سحب علوي', en: 'Lat Pulldown', sets: 3, reps: '١٠–١٢', muscle: 'ظهر · لاتس', illu: 'pulldown', gif: FP + '2021/02/Lat-Pulldown.gif',
           cues: ['امسكي أوسع من كتفك شوي', 'اسحبي البار لصدرك بضمّ اللوحين', 'طلّعيه ببطء لين يمتد ظهرك'] },
-        { ar: 'تجديف بمسند الصدر', en: 'Chest Supported Row', sets: 3, reps: '١٠', muscle: 'ظهر', illu: 'row', gif: FP + '2021/02/45-Degree-Incline-Row.gif',
-          cues: ['صدرك مسنود وثابت', 'اسحبي مرفقيك للخلف قريبين من جسمك', 'اعصري ظهرك ثانية بالأعلى'] },
-        { ar: 'تجديف أرضي كيبل', en: 'Seated Cable Row', sets: 3, reps: '١٠', muscle: 'ظهر', illu: 'row', gif: FP + '2021/02/Seated-Cable-Row.gif',
+        { ar: 'تجديف أرضي كيبل', en: 'Seated Cable Row', sets: 3, reps: '١٠–١٢', muscle: 'ظهر', illu: 'row', gif: FP + '2021/02/Seated-Cable-Row.gif',
           cues: ['ظهرك مستقيم وصدرك مرفوع', 'اسحبي للبطن وضمّي اللوحين', 'الشغل بالظهر مو بالتأرجح'] },
+        { ar: 'تجديف بمسند الصدر', en: 'Chest Supported Row', sets: 3, reps: '١٢', muscle: 'ظهر', illu: 'row', gif: FP + '2021/02/45-Degree-Incline-Row.gif',
+          cues: ['صدرك مسنود وثابت', 'اسحبي مرفقيك للخلف قريبين من جسمك', 'اعصري ظهرك ثانية بالأعلى'] },
         { ar: 'سحب للوجه', en: 'Face Pull', sets: 3, reps: '١٥', muscle: 'كتف خلفي', illu: 'raise', gif: FP + '2021/02/Face-Pull.gif',
           cues: ['اسحبي الحبل لمستوى وجهك', 'افتحي يديك ومرفقيك عاليين', 'ركّزي على الكتف الخلفي'] },
-        { ar: 'مرجحة مائلة دمبل', en: 'Incline Dumbbell Curl', sets: 3, reps: '١٠', muscle: 'بايسبس', illu: 'curl', gif: FP + '2021/02/Seated-Incline-Dumbbell-Curl.gif',
+        { ar: 'مرجحة مائلة دمبل', en: 'Incline Dumbbell Curl', sets: 3, reps: '١٢', muscle: 'بايسبس', illu: 'curl', gif: FP + '2021/02/Seated-Incline-Dumbbell-Curl.gif',
           cues: ['اتكئي على كرسي مائل وذراعك مرتخية', 'ارفعي بالبايسبس بدون تأرجح', 'نزّلي كامل لين يمتد'] },
         { ar: 'مرجحة مطرقية', en: 'Hammer Curl', sets: 3, reps: '١٢', muscle: 'بايسبس · ساعد', illu: 'curl', gif: FP + '2021/02/Hammer-Curl.gif',
           cues: ['كفوفك متقابلة زي المطرقة', 'ارفعي بثبات وثبّتي مرفقك', 'نزّلي ببطء وتحكّم'] }
@@ -187,41 +229,36 @@
         { ar: 'إطالة الرقبة والترابيس', en: 'Trap & Neck Stretch', reps: '٣٠–٤٥ ث', illu: 'stretchStand', gif: NML + '2021/03/trap-stretch.gif',
           cues: ['ميّلي راسك لجهة كتفك', 'يد خفيفة فوق للشدّ البسيط', 'بلطف للجهتين بدون شدّ قوي'] }
       ],
-      tip: 'إطالة البايسبس على الحائط — افردي ذراعك على الجدار خلفك ولفّي جسمك بعكسها شوي.'
+      tip: 'ظهر قوي = قوام أحلى وكتف مشدود. خلي الشغل من عضلات الظهر مو من الأرجحة، وعدات ١٠–١٥ للتنشيف.'
     },
 
-    legs: {
-      label: 'أرجل', accent: 'legs',
-      title: 'يوم الأرجل', sub: 'تركيز المؤخرة',
+    /* ---------- 4) سفلي خلفي · قلوتز ---------- */
+    glutes: {
+      label: 'رِجل خلفي', accent: 'glutes',
+      title: 'اليوم السفلي الخلفي — قلوتز', sub: 'مؤخرة · خلفية الفخذ',
       warmup: [
         { ar: 'صباح الخير', en: 'Good Mornings', reps: '×١٠', illu: 'hinge', gif: NML + '2025/09/1-good-morning.gif',
           cues: ['يدينك على صدرك أو خلف راسك', 'اهبطي بالورك للخلف وظهرك مستوي', 'ارجعي بعصر المؤخرة'] },
         { ar: 'جسر المؤخرة', en: 'Glute Bridge', reps: '×١٥', illu: 'bridge', gif: NML + '2025/09/9-glute-bridge.gif',
           cues: ['نامي على ظهرك وركبك مثنية', 'ادفعي بكعبك وارفعي وركك', 'اعصري المؤخرة ثانية بالأعلى'] },
-        { ar: 'سكوات بوزن الجسم', en: 'Bodyweight Squat', reps: '×١٠', illu: 'squat', gif: NML + '2025/09/4-squats.gif',
-          cues: ['قدمينك بعرض كتفك', 'اهبطي وصدرك مرفوع', 'ادفعي بالكعب للطلوع'] },
-        { ar: 'خطوة سبايدرمان', en: "World's Greatest Stretch", reps: '٥ لكل جهة', illu: 'squat', gif: NML + '2025/09/6-spiderman-step-ins.gif',
-          cues: ['اطلعي خطوة أمامية واسعة', 'نزّلي مرفقك جنب قدمك', 'لفّي جذعك وارفعي يدك للسقف'] },
         { ar: 'تدوير الورك ٩٠/٩٠', en: '90/90 Hip Rotations', reps: '٥ لكل جهة', illu: 'seated', gif: NML + '2025/09/8-hip-rotations.gif',
           cues: ['اجلسي ورجليك بزاوية ٩٠', 'بدّلي ركبك من جهة لجهة', 'خلي الحركة من الورك بهدوء'] },
         { ar: 'دفع ورك تحضيري', en: 'Warm-up Hip Thrust', reps: '٢ خفيفة', illu: 'bridge', gif: FP + '2022/04/bodyweight-hip-thrust.gif',
-          cues: ['نفس حركة دفع الورك بوزن خفيف', 'ركّزي على دفع الكعب وعصر المؤخرة', 'تسخين مو إجهاد'] }
+          cues: ['نفس حركة دفع الورك بوزن خفيف', 'ركّزي على دفع الكعب وعصر المؤخرة', 'تسخين وتنشيط للمؤخرة مو إجهاد'] }
       ],
       exercises: [
-        { ar: 'دفع الورك', en: 'Hip Thrust', sets: 4, reps: '٨', muscle: 'مؤخرة', illu: 'bridge', gif: FP + '2021/02/Barbell-Hip-Thrust.gif',
+        { ar: 'دفع الورك', en: 'Hip Thrust', sets: 4, reps: '٨–١٠', muscle: 'مؤخرة', illu: 'bridge', gif: FP + '2021/02/Barbell-Hip-Thrust.gif',
           cues: ['لوّحي ظهرك على الكرسي وذقنك مدسوس', 'ادفعي بالكعب وارفعي الورك', 'اعصري المؤخرة ثانية بالأعلى ولا تقوّسين أسفل ظهرك'] },
-        { ar: 'رفعة رومانية', en: 'Romanian Deadlift', sets: 4, reps: '٨', muscle: 'خلفية · مؤخرة', illu: 'hinge', gif: FP + '2021/02/Barbell-Romanian-Deadlift.gif',
+        { ar: 'رفعة رومانية', en: 'Romanian Deadlift', sets: 4, reps: '١٠', muscle: 'خلفية · مؤخرة', illu: 'hinge', gif: FP + '2021/02/Barbell-Romanian-Deadlift.gif',
           cues: ['ادفعي وركك للخلف وظهرك مستوي', 'نزّلي الوزن قريب من رجلك', 'حسّي شدّ الخلفية وارجعي بعصر المؤخرة'] },
-        { ar: 'دفع أرجل', en: 'Leg Press', sets: 3, reps: '١٠', muscle: 'أرجل · مؤخرة', illu: 'squat', gif: FP + '2015/11/Leg-Press.gif',
-          cues: ['قدمينك بعرض كتفك على المنصة', 'انزلي لين تصير ركبتك ٩٠ درجة', 'ادفعي بالكعب ولا تقفلين ركبتك بالكامل'] },
-        { ar: 'سكوات بلغاري', en: 'Bulgarian Split Squat', sets: 3, reps: '١٠ لكل رجل', muscle: 'مؤخرة · فخذ', illu: 'squat', gif: FP + '2021/05/Dumbbell-Bulgarian-Split-Squat.gif',
-          cues: ['رجلك الخلفية على الكرسي', 'انزلي عمودي وركبتك الأمامية فوق كعبك', 'ادفعي بكعب رجلك الأمامية'] },
-        { ar: 'مبعدات الورك', en: 'Hip Abductor', sets: 3, reps: '١٥', muscle: 'مبعدات · مؤخرة', illu: 'seated', gif: FP + '2021/02/HiP-ABDUCTION-MACHINE.gif',
-          cues: ['اجلسي بظهر مسنود', 'افتحي رجليك للجانب بضغط', 'ارجعي ببطء وحسّي جانب المؤخرة'] },
+        { ar: 'سكوات سومو دمبل', en: 'Dumbbell Sumo Squat', sets: 3, reps: '١٢', muscle: 'مؤخرة · داخلي الفخذ', illu: 'squat', gif: FP + '2021/02/dumbbell-sumo-squat.gif',
+          cues: ['باعدي رجولك وأطراف قدميك للخارج', 'انزلي عمودي وركبك باتجاه أصابعك', 'ادفعي بالكعب وعصري المؤخرة بالأعلى'] },
         { ar: 'ركلة خلفية كيبل', en: 'Cable Kickback', sets: 3, reps: '١٥ لكل رجل', muscle: 'مؤخرة', illu: 'gluteKick', gif: FP + '2021/06/Glute-Kickback-Machine.gif',
           cues: ['ميلي شوي للأمام وثبّتي جذعك', 'اركلي رجلك للخلف بالكعب', 'اعصري المؤخرة بالنهاية بدون تقويس الظهر'] },
-        { ar: 'رفع السمانة واقفة', en: 'Standing Calf Raise', sets: 4, reps: '١٥', muscle: 'سمانة', illu: 'calf', gif: FP + '2021/06/Standing-Calf-Raise.gif',
-          cues: ['اطلعي على أطراف أصابعك بالكامل', 'ثبّتي ثانية بالأعلى', 'نزّلي ببطء لين تحسّين شدّ السمانة'] }
+        { ar: 'مبعدات الورك', en: 'Hip Abductor', sets: 3, reps: '٢٠', muscle: 'مبعدات · مؤخرة', illu: 'seated', gif: FP + '2021/02/HiP-ABDUCTION-MACHINE.gif',
+          cues: ['اجلسي بظهر مسنود وميلي شوي للأمام', 'افتحي رجليك للجانب بضغط', 'ارجعي ببطء وحسّي جانب المؤخرة'] },
+        { ar: 'ثني الركبة جالسة', en: 'Seated Leg Curl', sets: 3, reps: '١٢', muscle: 'خلفية الفخذ', illu: 'seated', gif: FP + '2021/08/Seated-Leg-Curl.gif',
+          cues: ['ثبّتي فخذك تحت الوسادة', 'اثني ركبك للخلف بقوة الخلفية', 'ارجعي ببطء وحسّي شدّ خلفية الفخذ'] }
       ],
       stretches: [
         { ar: 'ثنيات الورك جاثية', en: 'Kneeling Hip Flexor', reps: '٣٠–٤٥ ث', illu: 'kneel', gif: NML + '2025/12/hip-flexor-stretch-Cool-Down-Stretches.gif',
@@ -233,11 +270,11 @@
         { ar: 'السمانة على الحائط', en: 'Wall Calf', reps: '٣٠–٤٥ ث', illu: 'calf', gif: NML + '2025/12/standing-calf-stretch-Cool-Down-Stretches.gif',
           cues: ['يدينك على الحائط ورجل للخلف', 'كعبك بالأرض وركبتك مفرودة', 'اتقدّمي شوي لين تحسّين الشدّ'] }
       ],
-      tip: 'وضعية الرقم ٤ (Figure-4) — نامي على ظهرك، حطي كاحلك على ركبة الرجل الثانية واسحبيها لصدرك. ٣٠–٤٥ ث لكل جهة.'
+      tip: 'يوم المؤخرة — القاعدة الذهبية: دفع بالكعب، عصر المؤخرة ثانية بالأعلى، وعدم تقويس أسفل الظهر. زيدي الوزن بالتدرّج للتكبير. وضعية الرقم ٤ (Figure-4) ممتازة للإطالة ٣٠–٤٥ ث لكل جهة.'
     }
   };
 
-  const DAYS = ['push', 'pull', 'legs'];
+  const DAYS = ['chest', 'quads', 'back', 'glutes'];
 
   /* ==========================================================================
      Persistent set-tracker state
@@ -283,7 +320,6 @@
 
   const cuesHTML = (cues) => `<ul class="cues">${cues.map((c) => `<li>${c}</li>`).join('')}</ul>`;
 
-  // type: 'warmup' | 'exercise' | 'stretch'
   function cardHTML(item, day, type, index) {
     const p = PHASE[type];
     let chips;
@@ -340,7 +376,7 @@
     const str = d.stretches.map((it, i) => cardHTML(it, day, 'stretch', i)).join('');
 
     return `
-      <section class="view ${day === 'push' ? 'is-active' : ''}" id="view-${day}" role="tabpanel">
+      <section class="view ${day === 'chest' ? 'is-active' : ''}" id="view-${day}" role="tabpanel">
         <div class="day-head">
           <h2 class="day-head__title">${d.title}</h2>
           <p class="day-head__sub">${d.sub}</p>
@@ -395,7 +431,7 @@
   views.innerHTML = DAYS.map(viewHTML).join('');
   DAYS.forEach((d) => updateProgress(d, false));
 
-  /* ---------- reveal-on-scroll (emphasises moving between phases) ---------- */
+  /* ---------- reveal-on-scroll ---------- */
   let revealObserver = null;
   if ('IntersectionObserver' in window) {
     revealObserver = new IntersectionObserver((entries) => {
@@ -432,7 +468,6 @@
       const fresh = el(viewHTML(day));
       fresh.classList.toggle('is-active', old.classList.contains('is-active'));
       old.replaceWith(fresh);
-      // revealed immediately (already on screen) + rebind observer for offscreen
       fresh.querySelectorAll('.reveal').forEach((n) => {
         if (revealObserver) revealObserver.observe(n); else n.classList.add('in');
       });
@@ -445,7 +480,7 @@
      ========================================================================== */
   const tabs = Array.from(document.querySelectorAll('.tab'));
   const themeMeta = document.querySelector('meta[name="theme-color"]');
-  const DAY_THEME = { push: '#FFDDEC', pull: '#EBE2FA', legs: '#FFE3DC' };
+  const DAY_THEME = { chest: '#FFDDEC', quads: '#FFE3DC', back: '#EBE2FA', glutes: '#CFF1EC' };
 
   function switchDay(day) {
     document.body.dataset.day = day;
@@ -527,10 +562,10 @@
   setToggle(false); renderTimer();
 
   /* ==========================================================================
-     Celebration — falling confetti petals + toast (no emoji)
+     Celebration — falling confetti + toast (no emoji)
      ========================================================================== */
   const celebrateLayer = document.getElementById('celebrate');
-  const CONFETTI_COLORS = ['#E85D9E', '#9B7FD4', '#F4846C', '#F6C25B', '#FFD9EA', '#EBE2FA'];
+  const CONFETTI_COLORS = ['#E85D9E', '#9B7FD4', '#F4846C', '#F6C25B', '#34C4A8', '#FFD9EA'];
 
   function celebrate(message) {
     for (let i = 0; i < 40; i++) {

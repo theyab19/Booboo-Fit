@@ -28,6 +28,12 @@
   --legs-mist: #FFF1ED;
   --legs-deep: #D65F45;
 
+  /* Glutes (mint) */
+  --mint: #2FBBA0;
+  --mint-soft: #CFF1EC;
+  --mint-mist: #E9FAF6;
+  --mint-deep: #1E9A83;
+
   /* Accent */
   --gold: #F6C25B;
 
@@ -51,9 +57,10 @@
   --day-deep: var(--push-deep);
 }
 
-body[data-day="push"] { --day: var(--push); --day-soft: var(--push-soft); --day-mist: var(--push-mist); --day-deep: var(--push-deep); }
-body[data-day="pull"] { --day: var(--pull); --day-soft: var(--pull-soft); --day-mist: var(--pull-mist); --day-deep: var(--pull-deep); }
-body[data-day="legs"] { --day: var(--legs); --day-soft: var(--legs-soft); --day-mist: var(--legs-mist); --day-deep: var(--legs-deep); }
+body[data-day="chest"]  { --day: var(--push); --day-soft: var(--push-soft); --day-mist: var(--push-mist); --day-deep: var(--push-deep); }
+body[data-day="quads"]  { --day: var(--legs); --day-soft: var(--legs-soft); --day-mist: var(--legs-mist); --day-deep: var(--legs-deep); }
+body[data-day="back"]   { --day: var(--pull); --day-soft: var(--pull-soft); --day-mist: var(--pull-mist); --day-deep: var(--pull-deep); }
+body[data-day="glutes"] { --day: var(--mint); --day-soft: var(--mint-soft); --day-mist: var(--mint-mist); --day-deep: var(--mint-deep); }
 
 * { box-sizing: border-box; }
 
@@ -179,8 +186,8 @@ img { display: block; max-width: 100%; }
   top: 0;
   z-index: 40;
   display: flex;
-  gap: 8px;
-  padding: 12px;
+  gap: 6px;
+  padding: 12px 10px;
   margin-top: 6px;
   background: rgba(255, 244, 248, 0.9);
   backdrop-filter: blur(8px);
@@ -193,11 +200,11 @@ img { display: block; max-width: 100%; }
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 5px;
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: 15px;
-  padding: 12px 6px;
+  font-size: 13.5px;
+  padding: 11px 4px;
   border-radius: var(--radius-pill);
   color: var(--text-soft);
   background: #fff;
@@ -205,15 +212,17 @@ img { display: block; max-width: 100%; }
   transition: transform 0.15s ease, background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
 }
 .tab:active { transform: scale(0.96); }
-.tab__dot { width: 9px; height: 9px; border-radius: 50%; flex: none; transition: background 0.25s ease; }
-.tab[data-tab="push"] .tab__dot { background: var(--push); }
-.tab[data-tab="pull"] .tab__dot { background: var(--pull); }
-.tab[data-tab="legs"] .tab__dot { background: var(--legs); }
+.tab__dot { width: 8px; height: 8px; border-radius: 50%; flex: none; transition: background 0.25s ease; }
+.tab[data-tab="chest"] .tab__dot { background: var(--push); }
+.tab[data-tab="quads"] .tab__dot { background: var(--legs); }
+.tab[data-tab="back"] .tab__dot { background: var(--pull); }
+.tab[data-tab="glutes"] .tab__dot { background: var(--mint); }
 .tab.is-active .tab__dot { background: rgba(255, 255, 255, 0.9); }
 
-.tab[data-tab="push"].is-active { background: linear-gradient(135deg, var(--push), var(--push-deep)); color: #fff; box-shadow: 0 8px 20px rgba(232, 93, 158, 0.4); }
-.tab[data-tab="pull"].is-active { background: linear-gradient(135deg, var(--pull), var(--pull-deep)); color: #fff; box-shadow: 0 8px 20px rgba(155, 127, 212, 0.4); }
-.tab[data-tab="legs"].is-active { background: linear-gradient(135deg, var(--legs), var(--legs-deep)); color: #fff; box-shadow: 0 8px 20px rgba(244, 132, 108, 0.4); }
+.tab[data-tab="chest"].is-active  { background: linear-gradient(135deg, var(--push), var(--push-deep)); color: #fff; box-shadow: 0 8px 20px rgba(232, 93, 158, 0.4); }
+.tab[data-tab="quads"].is-active  { background: linear-gradient(135deg, var(--legs), var(--legs-deep)); color: #fff; box-shadow: 0 8px 20px rgba(244, 132, 108, 0.4); }
+.tab[data-tab="back"].is-active   { background: linear-gradient(135deg, var(--pull), var(--pull-deep)); color: #fff; box-shadow: 0 8px 20px rgba(155, 127, 212, 0.4); }
+.tab[data-tab="glutes"].is-active { background: linear-gradient(135deg, var(--mint), var(--mint-deep)); color: #fff; box-shadow: 0 8px 20px rgba(47, 187, 160, 0.4); }
 
 /* ==========================================================================
    Day view
