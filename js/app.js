@@ -42,7 +42,8 @@
     bulb: '<path d="M9.5 18h5"/><path d="M10 21.5h4"/><path d="M12 2.5a6.5 6.5 0 0 0-3.7 11.8c.5.4.9 1 .9 1.7V17h5.6v-1c0-.7.4-1.3.9-1.7A6.5 6.5 0 0 0 12 2.5Z"/>',
     check: '<path d="M20 6.5 9 17.5l-5-5"/>',
     heart: '<path d="M12 20.5S3.8 15.6 3.8 9.9A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 8.2 2.9c0 5.7-8.2 10.6-8.2 10.6z"/>',
-    cloud: '<path d="M7 18h9.5a3.7 3.7 0 0 0 .4-7.4 5.5 5.5 0 0 0-10.6-1.4A3.8 3.8 0 0 0 7 18z"/>'
+    cloud: '<path d="M7 18h9.5a3.7 3.7 0 0 0 .4-7.4 5.5 5.5 0 0 0-10.6-1.4A3.8 3.8 0 0 0 7 18z"/>',
+    chart: '<path d="M3 21h18"/><rect x="5" y="11" width="3.2" height="7" rx="1"/><rect x="10.4" y="6.5" width="3.2" height="11.5" rx="1"/><rect x="15.8" y="13.5" width="3.2" height="4.5" rx="1"/>'
   };
   const icon = (name, cls) =>
     `<svg class="ic${cls ? ' ' + cls : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" ` +
@@ -360,7 +361,10 @@
           </div>`;
       }
       tracker = `<div class="log">
-          <div class="tracker__label">وزنك وعداتك — رقم آخر أسبوع يبين تحت كل مجموعة · دقّي الدايرة لما تخلّصين</div>
+          <div class="log__head">
+            <span class="tracker__label">وزنك وعداتك · رقم آخر أسبوع تحت كل مجموعة</span>
+            <button class="log__history-btn" type="button" data-history-day="${day}" data-history-ex="${ex}" data-history-name="${item.ar}">${icon('chart')}<span>السجل</span></button>
+          </div>
           ${logrows}
         </div>`;
     }
@@ -498,6 +502,8 @@
       updateProgress(day, !wasComplete);
       return;
     }
+    const histBtn = e.target.closest('[data-history-ex]');
+    if (histBtn) { openHistory(histBtn.dataset.historyDay, histBtn.dataset.historyEx, histBtn.dataset.historyName); return; }
     const reset = e.target.closest('[data-reset]');
     if (reset) {
       const day = reset.dataset.reset;
@@ -637,6 +643,43 @@
       requestAnimationFrame(() => t.classList.add('is-show'));
       setTimeout(() => t.remove(), 2400);
     }
+  }
+
+  /* ==========================================================================
+     Exercise history (week-by-week)
+     ========================================================================== */
+  const historySheet = document.getElementById('historySheet');
+  const historyOverlay = document.getElementById('historyOverlay');
+  const historyTitle = document.getElementById('historyTitle');
+  const historyBody = document.getElementById('historyBody');
+
+  function openHistory(day, ex, name) {
+    if (!historySheet) return;
+    const hist = Store.history(day, ex);
+    historyTitle.textContent = 'سجل · ' + name;
+    if (!hist.length) {
+      historyBody.innerHTML = '<p class="history__empty">ما فيه سجل بعد.<br>سجّلي وزنك وعداتك، وأول ما تبدئين أسبوع جديد بيتخزّن الأسبوع هنا.</p>';
+    } else {
+      historyBody.innerHTML = hist.map((wk) => {
+        const idxs = Object.keys(wk.sets).map(Number).sort((a, b) => a - b);
+        const chips = idxs.map((si) => {
+          const v = wk.sets[si];
+          const w = v.weight == null ? '—' : toAr(v.weight);
+          const r = v.reps == null ? '—' : toAr(v.reps);
+          return `<span class="history__set ${v.done ? 'is-done' : ''}"><b>${w}</b> كجم × <b>${r}</b></span>`;
+        }).join('');
+        return `<div class="history__week">
+            <div class="history__wk">الأسبوع ${toAr(wk.week)}</div>
+            <div class="history__sets">${chips}</div>
+          </div>`;
+      }).join('');
+    }
+    historySheet.hidden = false; historyOverlay.hidden = false;
+  }
+  function closeHistory() { if (historySheet) { historySheet.hidden = true; historyOverlay.hidden = true; } }
+  if (historySheet) {
+    historyOverlay.addEventListener('click', closeHistory);
+    document.getElementById('historyClose').addEventListener('click', closeHistory);
   }
 
   /* ==========================================================================

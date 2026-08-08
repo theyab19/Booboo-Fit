@@ -195,6 +195,20 @@
       if (!v || (v.w == null && v.r == null && !v.d)) return null;
       return { weight: v.w, reps: v.r, done: !!v.d };
     },
+    // Full week-by-week history for one exercise (newest week first).
+    history: function (day, ex) {
+      var byWeek = {};
+      Object.keys(rows).forEach(function (key) {
+        var p = key.split('|');
+        if (p[0] !== day || p[1] !== ex) return;
+        var v = rows[key];
+        if (!v || (v.w == null && v.r == null && !v.d)) return;
+        var wk = +p[2], set = +p[3];
+        (byWeek[wk] = byWeek[wk] || {})[set] = { weight: v.w, reps: v.r, done: !!v.d };
+      });
+      return Object.keys(byWeek).map(Number).sort(function (a, b) { return b - a; })
+        .map(function (wk) { return { week: wk, sets: byWeek[wk] }; });
+    },
     set: function (day, ex, set, patch) {
       var key = K(day, ex, curWeek(day), set);
       var v = rows[key] || { w: null, r: null, d: false };

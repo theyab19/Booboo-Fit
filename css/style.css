@@ -802,6 +802,34 @@ img { display: block; max-width: 100%; }
 .logrow__done { width: 42px; height: 42px; flex: none; }
 .logrow__done .ic { width: 20px; height: 20px; }
 
+/* Log header + history button */
+.log__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.log__head .tracker__label { margin-bottom: 0; flex: 1; }
+.log__history-btn {
+  border: 0; cursor: pointer; flex: none;
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--day-mist); color: var(--day-deep);
+  font-family: var(--font-head); font-weight: 700; font-size: 11.5px;
+  padding: 6px 12px; border-radius: var(--radius-pill);
+  transition: transform 0.15s ease;
+}
+.log__history-btn .ic { width: 14px; height: 14px; }
+.log__history-btn:active { transform: scale(0.95); }
+
+/* ==========================================================================
+   Exercise history modal
+   ========================================================================== */
+.history-modal { top: 8%; }
+.history { max-height: 62vh; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 4px 2px 2px; }
+.history__empty { text-align: center; color: var(--text-soft); font-size: 13.5px; line-height: 1.8; padding: 22px 8px; }
+.history__week { padding: 12px 2px; border-bottom: 1px dashed var(--day-soft); }
+.history__week:last-child { border-bottom: 0; }
+.history__wk { font-family: var(--font-head); font-weight: 700; font-size: 13px; color: var(--day-deep); margin-bottom: 8px; }
+.history__sets { display: flex; flex-wrap: wrap; gap: 6px; }
+.history__set { font-size: 12.5px; color: var(--text-soft); background: var(--day-mist); border-radius: var(--radius-pill); padding: 5px 11px; white-space: nowrap; }
+.history__set b { color: var(--text); font-family: var(--font-head); font-weight: 700; }
+.history__set.is-done { background: linear-gradient(135deg, var(--day-soft), var(--day-mist)); }
+
 /* ==========================================================================
    Login modal (top-anchored so the iOS keyboard doesn't cover it)
    ========================================================================== */

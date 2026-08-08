@@ -140,6 +140,16 @@
     </form>
   </section>
 
+  <!-- Exercise history modal (week-by-week) -->
+  <div id="historyOverlay" class="sheet-overlay" hidden></div>
+  <section id="historySheet" class="login-modal history-modal" role="dialog" aria-modal="true" aria-labelledby="historyTitle" hidden>
+    <div class="sheet__head">
+      <h2 id="historyTitle">السجل</h2>
+      <button id="historyClose" class="sheet__close" type="button" aria-label="إغلاق">✕</button>
+    </div>
+    <div id="historyBody" class="history"></div>
+  </section>
+
   <!-- Confetti layer -->
   <div id="celebrate" class="celebrate" aria-hidden="true"></div>
 
