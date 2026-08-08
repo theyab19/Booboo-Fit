@@ -9,6 +9,17 @@
   /* ---------- helpers ---------- */
   const AR_DIGITS = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
   const toAr = (v) => String(v).replace(/[0-9]/g, (d) => AR_DIGITS[+d]);
+  // Normalise Arabic-Indic / Eastern digits (iOS Arabic keyboard) → a parseable number, or null.
+  const parseNum = (str) => {
+    if (str == null) return null;
+    const s = String(str)
+      .replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+      .replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+      .replace(/[٫،]/g, '.').replace(/[^\d.]/g, '').trim();
+    if (s === '') return null;
+    const n = parseFloat(s);
+    return isNaN(n) ? null : n;
+  };
   const el = (html) => {
     const t = document.createElement('template');
     t.innerHTML = html.trim();
@@ -30,7 +41,8 @@
     trend: '<path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/>',
     bulb: '<path d="M9.5 18h5"/><path d="M10 21.5h4"/><path d="M12 2.5a6.5 6.5 0 0 0-3.7 11.8c.5.4.9 1 .9 1.7V17h5.6v-1c0-.7.4-1.3.9-1.7A6.5 6.5 0 0 0 12 2.5Z"/>',
     check: '<path d="M20 6.5 9 17.5l-5-5"/>',
-    heart: '<path d="M12 20.5S3.8 15.6 3.8 9.9A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 8.2 2.9c0 5.7-8.2 10.6-8.2 10.6z"/>'
+    heart: '<path d="M12 20.5S3.8 15.6 3.8 9.9A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 8.2 2.9c0 5.7-8.2 10.6-8.2 10.6z"/>',
+    cloud: '<path d="M7 18h9.5a3.7 3.7 0 0 0 .4-7.4 5.5 5.5 0 0 0-10.6-1.4A3.8 3.8 0 0 0 7 18z"/>'
   };
   const icon = (name, cls) =>
     `<svg class="ic${cls ? ' ' + cls : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" ` +
@@ -279,29 +291,10 @@
   const DAYS = ['chest', 'quads', 'back', 'glutes'];
 
   /* ==========================================================================
-     Persistent set-tracker state
+     Tracker — persistence + cloud sync live in Store (store.js)
      ========================================================================== */
-  const STORE_KEY = 'booboo-fit:v1';
-  const loadState = () => {
-    try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }
-    catch (_) { return {}; }
-  };
-  let STATE = loadState();
-  const saveState = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(STATE)); } catch (_) {} };
-
-  const daySets = (day, i, total) => {
-    STATE[day] = STATE[day] || {};
-    if (!Array.isArray(STATE[day][i]) || STATE[day][i].length !== total) {
-      STATE[day][i] = new Array(total).fill(false);
-    }
-    return STATE[day][i];
-  };
-  const dayTotals = (day) => {
-    const ex = PROGRAM[day].exercises;
-    let total = 0, done = 0;
-    ex.forEach((e, i) => { total += e.sets; done += daySets(day, i, e.sets).filter(Boolean).length; });
-    return { total, done };
-  };
+  const exList = (day) => PROGRAM[day].exercises.map((e) => ({ ex: e.en, sets: e.sets }));
+  const dayTotals = (day) => Store.progress(day, exList(day));
 
   /* ==========================================================================
      Rendering
@@ -335,14 +328,34 @@
 
     let tracker = '';
     if (type === 'exercise') {
-      const sets = daySets(day, index, item.sets);
-      const dots = sets.map((done, s) =>
-        `<button class="set-dot ${done ? 'is-done' : ''}" data-day="${day}" data-ex="${index}" data-set="${s}"
-                 type="button" aria-pressed="${done}" aria-label="مجموعة ${toAr(s + 1)}">${done ? icon('check') : ''}</button>`
-      ).join('');
-      tracker = `<div class="tracker">
-          <div class="tracker__label">مجموعاتك — دقّي عليها لما تخلّصينها</div>
-          <div class="tracker__sets">${dots}</div>
+      const ex = item.en;
+      let logrows = '';
+      for (let s = 0; s < item.sets; s++) {
+        const cur = Store.get(day, ex, s);
+        const last = Store.last(day, ex, s);
+        const wVal = cur.weight == null ? '' : toAr(cur.weight);
+        const rVal = cur.reps == null ? '' : toAr(cur.reps);
+        const wPh = last && last.weight != null ? toAr(last.weight) : 'الوزن';
+        const rPh = last && last.reps != null ? toAr(last.reps) : 'عدد';
+        logrows += `<div class="logrow" data-day="${day}" data-ex="${ex}" data-set="${s}">
+            <span class="logrow__n">${toAr(s + 1)}</span>
+            <span class="logfield">
+              <input class="loginput" data-field="weight" type="text" inputmode="decimal" enterkeyhint="next"
+                     autocomplete="off" placeholder="${wPh}" value="${wVal}" aria-label="الوزن للمجموعة ${toAr(s + 1)}">
+              <span class="logunit">كجم</span>
+            </span>
+            <span class="logmul">×</span>
+            <span class="logfield logfield--reps">
+              <input class="loginput" data-field="reps" type="text" inputmode="numeric" enterkeyhint="done"
+                     autocomplete="off" placeholder="${rPh}" value="${rVal}" aria-label="العدات للمجموعة ${toAr(s + 1)}">
+            </span>
+            <button class="set-dot logrow__done ${cur.done ? 'is-done' : ''}" type="button"
+                    aria-pressed="${cur.done}" aria-label="خلّصت المجموعة ${toAr(s + 1)}">${cur.done ? icon('check') : ''}</button>
+          </div>`;
+      }
+      tracker = `<div class="log">
+          <div class="tracker__label">وزنك وعداتك — الأرقام الباهتة هي آخر أسبوع · دقّي الدايرة لما تخلّصين المجموعة</div>
+          ${logrows}
         </div>`;
     }
 
@@ -444,36 +457,63 @@
     document.querySelectorAll('.reveal').forEach((n) => n.classList.add('in'));
   }
 
-  /* ---------- set-dot tracking (event delegation) ---------- */
+  /* ---------- re-render a day view (after new-week or cloud pull) ---------- */
+  function rerenderDay(day) {
+    const old = document.getElementById(`view-${day}`);
+    if (!old) return;
+    const wasActive = old.classList.contains('is-active');
+    const fresh = el(viewHTML(day));
+    fresh.classList.toggle('is-active', wasActive);
+    old.replaceWith(fresh);
+    fresh.querySelectorAll('.reveal').forEach((n) => { if (revealObserver) revealObserver.observe(n); else n.classList.add('in'); });
+    updateProgress(day, false);
+  }
+  function rerenderAllDays() {
+    // never blow away an input the user is currently editing
+    const a = document.activeElement;
+    if (a && a.classList && a.classList.contains('loginput')) return;
+    DAYS.forEach(rerenderDay);
+  }
+
+  /* ---------- log interactions (event delegation) ---------- */
   views.addEventListener('click', (e) => {
-    const dot = e.target.closest('.set-dot');
-    if (dot) {
-      const { day, ex, set } = dot.dataset;
-      const item = PROGRAM[day].exercises[+ex];
-      const sets = daySets(day, +ex, item.sets);
+    const done = e.target.closest('.logrow__done');
+    if (done) {
+      const row = done.closest('.logrow');
+      const { day, ex, set } = row.dataset;
+      const cur = Store.get(day, ex, +set);
       const t = dayTotals(day);
-      const wasComplete = t.done === t.total;
-      sets[+set] = !sets[+set];
-      saveState();
-      dot.classList.toggle('is-done', sets[+set]);
-      dot.innerHTML = sets[+set] ? icon('check') : '';
-      dot.setAttribute('aria-pressed', sets[+set]);
+      const wasComplete = t.total > 0 && t.done === t.total;
+      const next = !cur.done;
+      Store.set(day, ex, +set, { done: next });
+      done.classList.toggle('is-done', next);
+      done.innerHTML = next ? icon('check') : '';
+      done.setAttribute('aria-pressed', String(next));
       updateProgress(day, !wasComplete);
       return;
     }
     const reset = e.target.closest('[data-reset]');
     if (reset) {
       const day = reset.dataset.reset;
-      STATE[day] = {};
-      saveState();
-      const old = document.getElementById(`view-${day}`);
-      const fresh = el(viewHTML(day));
-      fresh.classList.toggle('is-active', old.classList.contains('is-active'));
-      old.replaceWith(fresh);
-      fresh.querySelectorAll('.reveal').forEach((n) => {
-        if (revealObserver) revealObserver.observe(n); else n.classList.add('in');
-      });
-      updateProgress(day, false);
+      Store.newWeek(day);
+      rerenderDay(day);
+    }
+  });
+
+  // Save weight / reps when the field loses focus.
+  views.addEventListener('change', (e) => {
+    const inp = e.target.closest('.loginput');
+    if (!inp) return;
+    const row = inp.closest('.logrow');
+    const { day, ex, set } = row.dataset;
+    const n = parseNum(inp.value);
+    if (inp.dataset.field === 'weight') {
+      Store.set(day, ex, +set, { weight: n });
+      inp.value = n == null ? '' : toAr(n);
+    } else {
+      const r = n == null ? null : Math.round(n);
+      Store.set(day, ex, +set, { reps: r });
+      inp.value = r == null ? '' : toAr(r);
     }
   });
 
@@ -592,6 +632,77 @@
       setTimeout(() => t.remove(), 2400);
     }
   }
+
+  /* ==========================================================================
+     Account / cloud sync (Supabase via Store)
+     ========================================================================== */
+  const authBar = document.getElementById('authBar');
+  const loginModal = document.getElementById('loginSheet');
+  const loginOverlay = document.getElementById('loginOverlay');
+  const loginForm = document.getElementById('loginForm');
+  const loginEmail = document.getElementById('loginEmail');
+  const loginPass = document.getElementById('loginPass');
+  const loginError = document.getElementById('loginError');
+  const loginSubmit = document.getElementById('loginSubmit');
+  const loginToggle = document.getElementById('loginToggle');
+  const loginTitle = document.getElementById('loginTitle');
+  let signupMode = false;
+
+  const statusText = () => ({ syncing: 'يحفظ…', offline: 'غير متصل — بيتزامن لاحقًا', synced: 'محفوظ بالسحابة' }[Store.status()] || '');
+
+  function updateAuthBar() {
+    if (!authBar) return;
+    if (!Store.cloudEnabled) { authBar.hidden = true; return; }
+    authBar.hidden = false;
+    if (Store.isAuthed()) {
+      authBar.innerHTML =
+        `<span class="authbar__info">${icon('cloud')}<span class="authbar__email">${Store.user().email || ''}</span></span>
+         <span class="authbar__status">${statusText()}</span>
+         <button class="authbar__btn" id="logoutBtn" type="button">خروج</button>`;
+    } else {
+      authBar.innerHTML =
+        `<span class="authbar__info">${icon('cloud')}<span>احفظي تقدّمك بالسحابة</span></span>
+         <button class="authbar__btn authbar__btn--primary" id="loginOpen" type="button">دخول</button>`;
+    }
+  }
+  const openLogin = () => { if (loginModal) { loginError.textContent = ''; loginModal.hidden = false; loginOverlay.hidden = false; setTimeout(() => loginEmail && loginEmail.focus(), 60); } };
+  const closeLogin = () => { if (loginModal) { loginModal.hidden = true; loginOverlay.hidden = true; } };
+  function setSignupMode(on) {
+    signupMode = on;
+    loginTitle.textContent = on ? 'حساب جديد' : 'تسجيل الدخول';
+    loginSubmit.textContent = on ? 'إنشاء الحساب' : 'دخول';
+    loginToggle.textContent = on ? 'عندك حساب؟ سجّلي الدخول' : 'ما عندك حساب؟ أنشئي واحد';
+  }
+
+  if (authBar) {
+    authBar.addEventListener('click', (e) => {
+      if (e.target.closest('#loginOpen')) openLogin();
+      else if (e.target.closest('#logoutBtn')) Store.logout().then(updateAuthBar);
+    });
+  }
+  if (loginModal) {
+    loginOverlay.addEventListener('click', closeLogin);
+    document.getElementById('loginClose').addEventListener('click', closeLogin);
+    loginToggle.addEventListener('click', () => setSignupMode(!signupMode));
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = (loginEmail.value || '').trim();
+      const pass = loginPass.value || '';
+      if (!email || pass.length < 6) { loginError.textContent = 'اكتبي إيميل وكلمة مرور ٦ حروف على الأقل'; return; }
+      loginError.textContent = '';
+      loginSubmit.disabled = true; loginSubmit.textContent = 'لحظة…';
+      (signupMode ? Store.signup(email, pass) : Store.login(email, pass))
+        .then(() => { closeLogin(); updateAuthBar(); rerenderAllDays(); DAYS.forEach((d) => updateProgress(d, false)); })
+        .catch((err) => { loginError.textContent = err.message || 'تعذّر تسجيل الدخول'; })
+        .then(() => { loginSubmit.disabled = false; setSignupMode(signupMode); });
+    });
+    setSignupMode(false);
+  }
+
+  Store.onChange(updateAuthBar);
+  Store.onData(() => { rerenderAllDays(); DAYS.forEach((d) => updateProgress(d, false)); });
+  updateAuthBar();
+  Store.init();
 
   /* ==========================================================================
      Service worker

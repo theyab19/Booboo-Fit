@@ -77,6 +77,9 @@
     <button class="tab" role="tab" aria-selected="false" data-tab="glutes"><span class="tab__dot"></span>خلفي</button>
   </nav>
 
+  <!-- Cloud-sync / account bar (populated by app.js) -->
+  <div id="authBar" class="authbar" hidden></div>
+
   <!-- Day views are rendered here by app.js -->
   <main id="views"></main>
 
@@ -116,9 +119,32 @@
     </div>
   </section>
 
-  <!-- 🎉 Confetti / hearts layer -->
+  <!-- Login modal (email + password → cloud sync) -->
+  <div id="loginOverlay" class="sheet-overlay" hidden></div>
+  <section id="loginSheet" class="login-modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle" hidden>
+    <div class="sheet__head">
+      <h2 id="loginTitle">تسجيل الدخول</h2>
+      <button id="loginClose" class="sheet__close" type="button" aria-label="إغلاق">✕</button>
+    </div>
+    <form id="loginForm" class="login">
+      <p class="login__hint">سجّلي الدخول عشان يتحفظ وزنك وعداتك بالسحابة وتشوفينه على أي جهاز</p>
+      <label class="login__label" for="loginEmail">الإيميل</label>
+      <input id="loginEmail" class="login__input" type="email" inputmode="email" autocomplete="email"
+             autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="you@email.com" dir="ltr" required>
+      <label class="login__label" for="loginPass">كلمة المرور</label>
+      <input id="loginPass" class="login__input" type="password" autocomplete="current-password"
+             enterkeyhint="done" placeholder="••••••••" minlength="6" dir="ltr" required>
+      <p id="loginError" class="login__error" role="alert"></p>
+      <button id="loginSubmit" class="btn btn--primary login__submit" type="submit">دخول</button>
+      <button id="loginToggle" class="login__toggle" type="button">ما عندك حساب؟ أنشئي واحد</button>
+    </form>
+  </section>
+
+  <!-- Confetti layer -->
   <div id="celebrate" class="celebrate" aria-hidden="true"></div>
 
+  <script src="./js/config.js" defer></script>
+  <script src="./js/store.js" defer></script>
   <script src="./js/app.js" defer></script>
 </body>
 </html>

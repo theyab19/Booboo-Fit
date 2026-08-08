@@ -745,6 +745,94 @@ img { display: block; max-width: 100%; }
   100% { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
 }
 
+/* ==========================================================================
+   Cloud-sync / account bar
+   ========================================================================== */
+.authbar {
+  max-width: 480px;
+  margin: 2px auto 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 2px;
+}
+.authbar__info { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; font-size: 12.5px; color: var(--text-soft); }
+.authbar__info .ic { width: 16px; height: 16px; color: var(--day); flex: none; }
+.authbar__email { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; color: var(--text); direction: ltr; }
+.authbar__status { font-size: 10.5px; font-weight: 700; color: var(--day-deep); white-space: nowrap; }
+.authbar__btn {
+  border: 0; cursor: pointer; flex: none;
+  background: var(--day-mist); color: var(--day-deep);
+  font-family: var(--font-body); font-weight: 700; font-size: 12px;
+  padding: 7px 15px; border-radius: var(--radius-pill);
+  transition: transform 0.15s ease;
+}
+.authbar__btn--primary { background: linear-gradient(135deg, var(--day), var(--day-deep)); color: #fff; }
+.authbar__btn:active { transform: scale(0.95); }
+
+/* ==========================================================================
+   Weight / reps log rows
+   ========================================================================== */
+.log { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--day-soft); }
+.logrow { display: flex; align-items: center; gap: 6px; padding: 7px 0; }
+.logrow + .logrow { border-top: 1px solid var(--day-mist); }
+.logrow__n {
+  width: 20px; height: 20px; flex: none;
+  display: grid; place-items: center; border-radius: 50%;
+  background: var(--day-mist); color: var(--day-deep);
+  font-family: var(--font-head); font-weight: 700; font-size: 11px;
+}
+.logfield { display: flex; align-items: center; gap: 3px; flex: 1; min-width: 0; }
+.logfield--reps { flex: 0.85; }
+.loginput {
+  width: 100%; min-width: 0; box-sizing: border-box;
+  font-family: var(--font-body); font-size: 16px; /* >=16px: no iOS zoom-on-focus */
+  font-weight: 600; text-align: center; color: var(--text);
+  padding: 9px 4px; border: 1.5px solid var(--day-soft); border-radius: 12px;
+  background: #fff; -webkit-appearance: none; appearance: none;
+}
+.loginput:focus { outline: none; border-color: var(--day); box-shadow: 0 0 0 3px var(--ring); }
+.loginput::placeholder { color: #cbb9c6; font-weight: 500; }
+.logunit { font-size: 10.5px; color: var(--text-soft); flex: none; }
+.logmul { color: var(--text-soft); font-weight: 700; font-size: 13px; flex: none; }
+.logrow__done { width: 42px; height: 42px; flex: none; }
+.logrow__done .ic { width: 20px; height: 20px; }
+
+/* ==========================================================================
+   Login modal (top-anchored so the iOS keyboard doesn't cover it)
+   ========================================================================== */
+.login-modal {
+  position: fixed;
+  z-index: 80;
+  left: 50%;
+  top: 10%;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 400px;
+  background: var(--card);
+  border-radius: 26px;
+  padding: 12px 22px calc(22px + env(safe-area-inset-bottom));
+  box-shadow: var(--shadow-lift);
+  animation: modalIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+.login { padding-top: 4px; }
+.login__hint { font-size: 13px; color: var(--text-soft); margin: 0 0 12px; text-align: center; line-height: 1.55; }
+.login__label { display: block; font-size: 12.5px; font-weight: 700; color: var(--day-deep); margin: 10px 2px 5px; }
+.login__input {
+  width: 100%; box-sizing: border-box;
+  font-family: var(--font-body); font-size: 16px;
+  padding: 13px 14px; border: 1.5px solid var(--day-soft); border-radius: 14px;
+  background: #fff; color: var(--text); -webkit-appearance: none; appearance: none;
+}
+.login__input:focus { outline: none; border-color: var(--day); box-shadow: 0 0 0 3px var(--ring); }
+.login__error { color: var(--push-deep); font-size: 12.5px; min-height: 15px; margin: 8px 2px 0; text-align: center; font-weight: 600; }
+.login__submit { width: 100%; justify-content: center; margin-top: 14px; }
+.login__toggle { display: block; margin: 14px auto 0; background: none; border: 0; color: var(--day-deep); font-family: var(--font-body); font-weight: 600; font-size: 13px; cursor: pointer; }
+
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
   .reveal { opacity: 1 !important; transform: none !important; }
