@@ -774,8 +774,12 @@ img { display: block; max-width: 100%; }
    Weight / reps log rows
    ========================================================================== */
 .log { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--day-soft); }
-.logrow { display: flex; align-items: center; gap: 6px; padding: 7px 0; }
-.logrow + .logrow { border-top: 1px solid var(--day-mist); }
+.logset { padding: 8px 0; }
+.logset + .logset { border-top: 1px solid var(--day-mist); }
+.logrow { display: flex; align-items: center; gap: 6px; }
+.logrow__last { display: flex; align-items: center; gap: 4px; font-size: 11.5px; color: var(--text-soft); margin: 5px 0 0; margin-inline-start: 26px; }
+.logrow__last b { color: var(--day-deep); font-weight: 700; font-family: var(--font-head); }
+.logrow__lastic { width: 12px; height: 12px; color: var(--day); flex: none; }
 .logrow__n {
   width: 20px; height: 20px; flex: none;
   display: grid; place-items: center; border-radius: 50%;

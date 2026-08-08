@@ -335,26 +335,32 @@
         const last = Store.last(day, ex, s);
         const wVal = cur.weight == null ? '' : toAr(cur.weight);
         const rVal = cur.reps == null ? '' : toAr(cur.reps);
-        const wPh = last && last.weight != null ? toAr(last.weight) : 'الوزن';
-        const rPh = last && last.reps != null ? toAr(last.reps) : 'عدد';
-        logrows += `<div class="logrow" data-day="${day}" data-ex="${ex}" data-set="${s}">
-            <span class="logrow__n">${toAr(s + 1)}</span>
-            <span class="logfield">
-              <input class="loginput" data-field="weight" type="text" inputmode="decimal" enterkeyhint="next"
-                     autocomplete="off" placeholder="${wPh}" value="${wVal}" aria-label="الوزن للمجموعة ${toAr(s + 1)}">
-              <span class="logunit">كجم</span>
-            </span>
-            <span class="logmul">×</span>
-            <span class="logfield logfield--reps">
-              <input class="loginput" data-field="reps" type="text" inputmode="numeric" enterkeyhint="done"
-                     autocomplete="off" placeholder="${rPh}" value="${rVal}" aria-label="العدات للمجموعة ${toAr(s + 1)}">
-            </span>
-            <button class="set-dot logrow__done ${cur.done ? 'is-done' : ''}" type="button"
-                    aria-pressed="${cur.done}" aria-label="خلّصت المجموعة ${toAr(s + 1)}">${cur.done ? icon('check') : ''}</button>
+        const lastLine = last
+          ? `<div class="logrow__last">${icon('reset', 'logrow__lastic')} آخر أسبوع ·
+               <b>${last.weight == null ? '—' : toAr(last.weight)}</b> كجم ×
+               <b>${last.reps == null ? '—' : toAr(last.reps)}</b> عدة</div>`
+          : '';
+        logrows += `<div class="logset">
+            <div class="logrow" data-day="${day}" data-ex="${ex}" data-set="${s}">
+              <span class="logrow__n">${toAr(s + 1)}</span>
+              <span class="logfield">
+                <input class="loginput" data-field="weight" type="text" inputmode="decimal" enterkeyhint="next"
+                       autocomplete="off" placeholder="الوزن" value="${wVal}" aria-label="الوزن للمجموعة ${toAr(s + 1)}">
+                <span class="logunit">كجم</span>
+              </span>
+              <span class="logmul">×</span>
+              <span class="logfield logfield--reps">
+                <input class="loginput" data-field="reps" type="text" inputmode="numeric" enterkeyhint="done"
+                       autocomplete="off" placeholder="عدات" value="${rVal}" aria-label="العدات للمجموعة ${toAr(s + 1)}">
+              </span>
+              <button class="set-dot logrow__done ${cur.done ? 'is-done' : ''}" type="button"
+                      aria-pressed="${cur.done}" aria-label="خلّصت المجموعة ${toAr(s + 1)}">${cur.done ? icon('check') : ''}</button>
+            </div>
+            ${lastLine}
           </div>`;
       }
       tracker = `<div class="log">
-          <div class="tracker__label">وزنك وعداتك — الأرقام الباهتة هي آخر أسبوع · دقّي الدايرة لما تخلّصين المجموعة</div>
+          <div class="tracker__label">وزنك وعداتك — رقم آخر أسبوع يبين تحت كل مجموعة · دقّي الدايرة لما تخلّصين</div>
           ${logrows}
         </div>`;
     }
