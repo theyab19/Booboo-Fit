@@ -173,6 +173,8 @@
       exercises: [
         { ar: 'سكوات دمبل', en: 'Dumbbell Squat', sets: 4, reps: '١٠', muscle: 'كوادز · أرجل', illu: 'squat', gif: FP + '2023/09/Dumbbell-Squat.gif',
           cues: ['قدمينك بعرض كتفك وصدرك مرفوع', 'انزلي لين يصير فخذك موازي للأرض', 'ادفعي بالكعب وعصري رجولك للطلوع'] },
+        { ar: 'دفع الورك', en: 'Hip Thrust', sets: 4, reps: '١٠', muscle: 'مؤخرة', illu: 'bridge', gif: FP + '2021/02/Barbell-Hip-Thrust.gif',
+          cues: ['لوّحي ظهرك على الكرسي وذقنك مدسوس', 'ادفعي بالكعب وارفعي الورك', 'اعصري المؤخرة ثانية بالأعلى ولا تقوّسين أسفل ظهرك'] },
         { ar: 'دفع أرجل', en: 'Leg Press', sets: 4, reps: '١٢', muscle: 'كوادز · مؤخرة', illu: 'squat', gif: FP + '2015/11/Leg-Press.gif',
           cues: ['قدمينك بعرض كتفك ومنخفضة شوي للكوادز', 'انزلي لين تصير ركبتك ٩٠ درجة', 'ادفعي بالكعب ولا تقفلين ركبتك بالكامل'] },
         { ar: 'سكوات بلغاري', en: 'Bulgarian Split Squat', sets: 3, reps: '١٠ لكل رجل', muscle: 'كوادز · مؤخرة', illu: 'squat', gif: FP + '2021/05/Dumbbell-Bulgarian-Split-Squat.gif',
