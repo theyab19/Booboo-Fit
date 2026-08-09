@@ -291,6 +291,11 @@
 
   const DAYS = ['chest', 'quads', 'back', 'glutes'];
 
+  // The UI now lives in js/ui.js. Expose the program data + helpers, then stop.
+  window.BF = { PROGRAM, DAYS, PHASE, ICON_PATHS, icon, illuSvg, toAr, parseNum, el };
+  return;
+  /* eslint-disable no-unreachable */
+
   /* ==========================================================================
      Tracker — persistence + cloud sync live in Store (store.js)
      ========================================================================== */

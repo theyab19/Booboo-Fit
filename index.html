@@ -2,150 +2,103 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
   <meta name="referrer" content="no-referrer" />
   <title>بوبو فت — Booboo Fit</title>
-  <meta name="description" content="برنامجك ٤ أيام — صدر · رِجل أمامي · ظهر · رِجل خلفي. دليل تمارين لطيف مسوّي بحب" />
+  <meta name="description" content="برنامجك ٤ أيام — صدر · رِجل أمامي · ظهر · رِجل خلفي. سجّلي أوزانك وتابعي تقدّمك." />
 
-  <!-- Theme / PWA -->
-  <meta name="theme-color" content="#FFDDEC" />
+  <meta name="theme-color" content="#0E0E12" />
   <link rel="manifest" href="./manifest.webmanifest" />
-
-  <!-- iOS home-screen app -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="بوبو فت" />
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
-
-  <!-- Favicons -->
   <link rel="icon" href="./icons/favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16.png" />
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="./css/style.css" />
 </head>
-<body data-day="chest">
+<body>
 
-  <!-- ✨ Hero -->
-  <header class="hero">
-    <div class="hero__ornament" aria-hidden="true"></div>
-    <h1 class="hero__title">بوبو فت</h1>
-    <p class="hero__subtitle">برنامجك ٣ أيام — دفع · سحب · أرجل</p>
+  <!-- Active screen is rendered here by ui.js -->
+  <main id="screen" class="screen"></main>
 
-    <section class="golden-rule" aria-label="القاعدة الذهبية">
-      <h2 class="golden-rule__head">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.2l5.9-.9z"/></svg>
-        القاعدة الذهبية
-      </h2>
-      <ul class="golden-rule__list">
-        <li>
-          <span class="golden-rule__label">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
-            قبل التمرين
-          </span>
-          إحماء حركي ٢–٣ دقايق + ٢–٤ مجموعات خفيفة لأول تمرين مركّب.
-        </li>
-        <li>
-          <span class="golden-rule__label">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.4 5.1-6"/></svg>
-            بعد التمرين
-          </span>
-          إطالات ثابتة ٣٠–٤٥ ثانية لكل وضعية.
-        </li>
-        <li>
-          <span class="golden-rule__label">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg>
-            قاعدة التدرّج
-          </span>
-          إذا خلّصتي كل العدات بأداء صحيح وباقي ١–٢ عدة بالخزان، زيدي الوزن ٢.٥–٥٪ الجلسة الجاية.
-        </li>
-      </ul>
-    </section>
-  </header>
-
-  <!-- 💗 Sticky tabs -->
-  <nav class="tabs" role="tablist" aria-label="أيام البرنامج">
-    <button class="tab is-active" role="tab" aria-selected="true" data-tab="chest"><span class="tab__dot"></span>صدر</button>
-    <button class="tab" role="tab" aria-selected="false" data-tab="quads"><span class="tab__dot"></span>أمامي</button>
-    <button class="tab" role="tab" aria-selected="false" data-tab="back"><span class="tab__dot"></span>ظهر</button>
-    <button class="tab" role="tab" aria-selected="false" data-tab="glutes"><span class="tab__dot"></span>خلفي</button>
+  <!-- Bottom navigation -->
+  <nav id="tabbar" class="tabbar" role="tablist" aria-label="التنقّل">
+    <button class="navbtn is-active" data-nav="home" role="tab" aria-selected="true">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+      <span>الرئيسية</span>
+    </button>
+    <button class="navbtn" data-nav="workout" role="tab" aria-selected="false">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8.5" width="3.6" height="7" rx="1.2"/><rect x="17.9" y="8.5" width="3.6" height="7" rx="1.2"/><path d="M6.1 12h11.8"/><path d="M6.3 10.4v3.2M17.7 10.4v3.2"/></svg>
+      <span>التمرين</span>
+    </button>
+    <button class="navbtn" data-nav="progress" role="tab" aria-selected="false">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="M4 20V4"/><path d="M7 15l4-4 3 2 5-6"/></svg>
+      <span>تقدّمي</span>
+    </button>
+    <button class="navbtn" data-nav="account" role="tab" aria-selected="false">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>
+      <span>حسابي</span>
+    </button>
   </nav>
 
-  <!-- Cloud-sync / account bar (populated by app.js) -->
-  <div id="authBar" class="authbar" hidden></div>
+  <!-- Exercise detail (full screen), populated by ui.js -->
+  <section id="exScreen" class="exscreen" hidden></section>
 
-  <!-- Day views are rendered here by app.js -->
-  <main id="views"></main>
-
-  <!-- Rest-timer floating button -->
-  <button id="timerFab" class="timer-fab" type="button" aria-label="مؤقّت الراحة">
-    <span class="timer-fab__icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3.2 2"/></svg></span>
-    <span class="timer-fab__label">راحة</span>
-  </button>
-
-  <!-- Rest-timer bottom sheet -->
-  <div id="sheetOverlay" class="sheet-overlay" hidden></div>
+  <!-- Rest-timer sheet -->
+  <div id="sheetOverlay" class="overlay" hidden></div>
   <section id="timerSheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
     <div class="sheet__grab" aria-hidden="true"></div>
     <div class="sheet__head">
-      <h2 id="sheetTitle">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3.2 2"/></svg>
-        مؤقّت الراحة
-      </h2>
-      <button id="sheetClose" class="sheet__close" type="button" aria-label="إغلاق">✕</button>
+      <h2 id="sheetTitle">مؤقّت الراحة</h2>
+      <button id="sheetClose" class="iconbtn" type="button" aria-label="إغلاق">✕</button>
     </div>
-
     <div class="timer">
       <div id="timerDisplay" class="timer__display">01:30</div>
       <div class="timer__presets">
-        <button class="timer__preset" data-seconds="60" type="button">٦٠ ث</button>
-        <button class="timer__preset is-active" data-seconds="90" type="button">٩٠ ث</button>
-        <button class="timer__preset" data-seconds="120" type="button">١٢٠ ث</button>
+        <button class="chip-btn" data-seconds="60" type="button">٦٠ ث</button>
+        <button class="chip-btn is-active" data-seconds="90" type="button">٩٠ ث</button>
+        <button class="chip-btn" data-seconds="120" type="button">١٢٠ ث</button>
       </div>
       <div class="timer__controls">
         <button id="timerToggle" class="btn btn--primary" type="button"></button>
-        <button id="timerReset" class="btn btn--ghost" type="button">
-          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4.5V9h-4.5"/></svg>
-          <span>صفّري</span>
-        </button>
+        <button id="timerReset" class="btn btn--ghost" type="button">صفّري</button>
       </div>
-      <p class="timer__hint">اهتزاز ونغمة لطيفة أول ما يخلص العدّاد</p>
     </div>
   </section>
 
-  <!-- Login modal (email + password → cloud sync) -->
-  <div id="loginOverlay" class="sheet-overlay" hidden></div>
-  <section id="loginSheet" class="login-modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle" hidden>
+  <!-- Login modal -->
+  <div id="loginOverlay" class="overlay" hidden></div>
+  <section id="loginSheet" class="modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle" hidden>
     <div class="sheet__head">
       <h2 id="loginTitle">تسجيل الدخول</h2>
-      <button id="loginClose" class="sheet__close" type="button" aria-label="إغلاق">✕</button>
+      <button id="loginClose" class="iconbtn" type="button" aria-label="إغلاق">✕</button>
     </div>
     <form id="loginForm" class="login">
-      <p class="login__hint">سجّلي الدخول عشان يتحفظ وزنك وعداتك بالسحابة وتشوفينه على أي جهاز</p>
-      <label class="login__label" for="loginEmail">الإيميل</label>
-      <input id="loginEmail" class="login__input" type="email" inputmode="email" autocomplete="email"
-             autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="you@email.com" dir="ltr" required>
-      <label class="login__label" for="loginPass">كلمة المرور</label>
-      <input id="loginPass" class="login__input" type="password" autocomplete="current-password"
-             enterkeyhint="done" placeholder="••••••••" minlength="6" dir="ltr" required>
+      <p class="modal__hint">سجّلي الدخول عشان يتحفظ وزنك وعداتك بالسحابة وتشوفينه على أي جهاز</p>
+      <label class="field__label" for="loginEmail">الإيميل</label>
+      <input id="loginEmail" class="field" type="email" inputmode="email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="you@email.com" dir="ltr" required>
+      <label class="field__label" for="loginPass">كلمة المرور</label>
+      <input id="loginPass" class="field" type="password" autocomplete="current-password" enterkeyhint="done" placeholder="••••••••" minlength="6" dir="ltr" required>
       <p id="loginError" class="login__error" role="alert"></p>
       <button id="loginSubmit" class="btn btn--primary login__submit" type="submit">دخول</button>
-      <button id="loginToggle" class="login__toggle" type="button">ما عندك حساب؟ أنشئي واحد</button>
+      <button id="loginToggle" class="linkbtn" type="button">ما عندك حساب؟ أنشئي واحد</button>
     </form>
   </section>
 
-  <!-- Exercise history modal (week-by-week) -->
-  <div id="historyOverlay" class="sheet-overlay" hidden></div>
-  <section id="historySheet" class="login-modal history-modal" role="dialog" aria-modal="true" aria-labelledby="historyTitle" hidden>
+  <!-- History modal -->
+  <div id="historyOverlay" class="overlay" hidden></div>
+  <section id="historySheet" class="modal" role="dialog" aria-modal="true" aria-labelledby="historyTitle" hidden>
     <div class="sheet__head">
       <h2 id="historyTitle">السجل</h2>
-      <button id="historyClose" class="sheet__close" type="button" aria-label="إغلاق">✕</button>
+      <button id="historyClose" class="iconbtn" type="button" aria-label="إغلاق">✕</button>
     </div>
     <div id="historyBody" class="history"></div>
   </section>
@@ -156,5 +109,6 @@
   <script src="./js/config.js" defer></script>
   <script src="./js/store.js" defer></script>
   <script src="./js/app.js" defer></script>
+  <script src="./js/ui.js" defer></script>
 </body>
 </html>

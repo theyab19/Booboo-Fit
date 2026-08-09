@@ -39,6 +39,15 @@
   var K = function (day, ex, wk, set) { return day + '|' + ex + '|' + wk + '|' + set; };
   var curWeek = function (day) { return week[day] || 1; };
 
+  // ---- date helpers (for the dashboard / progress stats) ----
+  function dkey(iso) {
+    var d = new Date(iso); if (isNaN(d.getTime())) return null;
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function weekStartSunday(ref) {
+    var x = new Date(ref); x.setHours(0, 0, 0, 0); x.setDate(x.getDate() - x.getDay()); return x;
+  }
+
   /* ---------------- auth / fetch ---------------- */
   function saveAuth(a) { auth = a; write(LS.auth, a); }
 
@@ -208,6 +217,85 @@
       });
       return Object.keys(byWeek).map(Number).sort(function (a, b) { return b - a; })
         .map(function (wk) { return { week: wk, sets: byWeek[wk] }; });
+    },
+
+    // ---- dashboard / progress analytics (derived from row updated-at dates) ----
+    trainedDates: function () {
+      var seen = {};
+      Object.keys(rows).forEach(function (k) { var v = rows[k]; if (v && v.d && v.u) { var dk = dkey(v.u); if (dk) seen[dk] = true; } });
+      return Object.keys(seen).sort();
+    },
+    weekStats: function (ref) {
+      var start = weekStartSunday(ref || new Date());
+      var end = new Date(start); end.setDate(end.getDate() + 7);
+      var perVol = [0, 0, 0, 0, 0, 0, 0], perSets = [0, 0, 0, 0, 0, 0, 0], days = {}, vol = 0, sets = 0;
+      Object.keys(rows).forEach(function (k) {
+        var v = rows[k]; if (!v || !v.d || !v.u) return;
+        var d = new Date(v.u); if (d < start || d >= end) return;
+        var wd = d.getDay();
+        sets++; perSets[wd]++; days[dkey(v.u)] = true;
+        if (v.w != null && v.r != null) { var vv = v.w * v.r; vol += vv; perVol[wd] += vv; }
+      });
+      return { volume: vol, sets: sets, days: Object.keys(days).length, perVol: perVol, perSets: perSets, weekStart: start };
+    },
+    streak: function () {
+      var dates = this.trainedDates(); if (!dates.length) return 0;
+      var set = {}; dates.forEach(function (d) { set[d] = true; });
+      var cur = new Date(); cur.setHours(0, 0, 0, 0);
+      if (!set[dkey(cur.toISOString())]) { cur.setDate(cur.getDate() - 1); if (!set[dkey(cur.toISOString())]) return 0; }
+      var n = 0;
+      while (set[dkey(cur.toISOString())]) { n++; cur.setDate(cur.getDate() - 1); }
+      return n;
+    },
+    totalVolume: function () {
+      var t = 0; Object.keys(rows).forEach(function (k) { var v = rows[k]; if (v && v.d && v.w != null && v.r != null) t += v.w * v.r; });
+      return t;
+    },
+    // per-day this-week done sets for one exercise's day (for the day cards / hero)
+    dayDoneThisWeek: function (day, exs) {
+      var start = weekStartSunday(new Date()), end = new Date(start); end.setDate(end.getDate() + 7);
+      var wk = curWeek(day), done = 0, total = 0;
+      exs.forEach(function (e) {
+        total += e.sets;
+        for (var s = 0; s < e.sets; s++) {
+          var v = rows[K(day, e.ex, wk, s)];
+          if (v && v.d) done++;
+        }
+      });
+      return { done: done, total: total };
+    },
+    series: function (day, ex) {
+      var byWeek = {};
+      Object.keys(rows).forEach(function (k) {
+        var p = k.split('|'); if (p[0] !== day || p[1] !== ex) return;
+        var v = rows[k]; if (!v || v.w == null) return;
+        var wk = +p[2]; byWeek[wk] = byWeek[wk] == null ? v.w : Math.max(byWeek[wk], v.w);
+      });
+      return Object.keys(byWeek).map(Number).sort(function (a, b) { return a - b; })
+        .map(function (wk) { return { week: wk, weight: byWeek[wk] }; });
+    },
+    pr: function (day, ex) {
+      var m = null;
+      Object.keys(rows).forEach(function (k) {
+        var p = k.split('|'); if (p[0] !== day || p[1] !== ex) return;
+        var v = rows[k]; if (v && v.w != null) m = (m == null ? v.w : Math.max(m, v.w));
+      });
+      return m;
+    },
+    recentWeeksVolume: function (n) {
+      n = n || 8;
+      var start = weekStartSunday(new Date()), buckets = [];
+      for (var i = n - 1; i >= 0; i--) {
+        var s = new Date(start); s.setDate(s.getDate() - i * 7);
+        var e = new Date(s); e.setDate(e.getDate() + 7);
+        buckets.push({ start: s, end: e, volume: 0 });
+      }
+      Object.keys(rows).forEach(function (k) {
+        var v = rows[k]; if (!v || !v.d || v.w == null || v.r == null || !v.u) return;
+        var d = new Date(v.u);
+        for (var j = 0; j < buckets.length; j++) { if (d >= buckets[j].start && d < buckets[j].end) { buckets[j].volume += v.w * v.r; break; } }
+      });
+      return buckets;
     },
     set: function (day, ex, set, patch) {
       var key = K(day, ex, curWeek(day), set);
