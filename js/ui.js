@@ -80,6 +80,7 @@
     }).join('');
   }
   function homeHTML() {
+    DAYS.forEach(function (d) { S.rollIfNewWeek(d); });
     var ws = S.weekStats();
     var goal = 4;
     var pct = Math.min(100, Math.round(ws.days / goal * 100));
@@ -142,7 +143,8 @@
       items.map(function (it, i) { return exrowHTML(day, phase, i, it); }).join('') + '</div>';
   }
   function workoutHTML() {
-    var d = curDay, m = DAY_META[d], dt = dayTotals(d);
+    var d = curDay; S.rollIfNewWeek(d);
+    var m = DAY_META[d], dt = dayTotals(d);
     var pct = dt.total ? Math.round(dt.done / dt.total * 100) : 0;
     var pills = DAYS.map(function (x) {
       return '<button class="pill' + (x === d ? ' is-active' : '') + '" data-day="' + x + '" style="--c:' + DAY_META[x].color + '">' + DAY_META[x].short + '</button>';
@@ -151,8 +153,7 @@
       '<div class="pills">' + pills + '</div>' +
       '<section class="dayhero" style="--c:' + m.color + '"><div class="dayhero__name">' + PROGRAM[d].title + '</div>' +
         '<div class="dayhero__sub">' + PROGRAM[d].sub + '</div>' +
-        '<div class="dayhero__row"><div class="dayhero__bar"><i style="width:' + pct + '%"></i></div><span>' + toAr(dt.done) + '/' + toAr(dt.total) + ' مجموعة</span></div>' +
-        '<button class="dayhero__new" data-newweek="' + d + '">' + icon('reset') + '<span>بدء أسبوع جديد</span></button></section>' +
+        '<div class="dayhero__row"><div class="dayhero__bar"><i style="width:' + pct + '%"></i></div><span>' + toAr(dt.done) + '/' + toAr(dt.total) + ' مجموعة</span></div></section>' +
       grpHTML(d, 'warmup', PROGRAM[d].warmup) +
       grpHTML(d, 'exercise', PROGRAM[d].exercises) +
       grpHTML(d, 'stretch', PROGRAM[d].stretches) + '<div class="botpad"></div>';
@@ -206,6 +207,7 @@
         '<button class="exnav__side exnav__next" id="exNext"><span>' + (hasNext ? 'التالي' : 'خلّصنا') + '</span>' + chev() + '</button></div></div>';
   }
   function openExercise(day, phase, i) {
+    S.rollIfNewWeek(day);
     ex = { day: day, phase: phase, i: i, open: true };
     exScreen.innerHTML = exScreenHTML();
     exScreen.hidden = false;
@@ -242,6 +244,7 @@
     return '<svg class="spark" viewBox="0 0 100 34" preserveAspectRatio="none"><polyline points="' + pts + '" fill="none" stroke="var(--c)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="100" cy="' + lastY + '" r="3" fill="var(--c)"/></svg>';
   }
   function progressHTML() {
+    DAYS.forEach(function (d) { S.rollIfNewWeek(d); });
     var weeks = S.recentWeeksVolume(8);
     var vals = weeks.map(function (w) { return w.volume; });
     var labels = weeks.map(function (w, i) { return i === weeks.length - 1 ? 'الآن' : toAr(weeks.length - 1 - i); });
@@ -405,7 +408,6 @@
     var nav = t.closest('[data-nav]'); if (nav) { go(nav.dataset.nav); return; }
     var goday = t.closest('[data-goday]'); if (goday) { go('workout', goday.dataset.goday); return; }
     var pill = t.closest('.pill[data-day]'); if (pill) { curDay = pill.dataset.day; render(); return; }
-    var nw = t.closest('[data-newweek]'); if (nw) { S.newWeek(nw.dataset.newweek); render(); return; }
     var open = t.closest('[data-open]'); if (open) { var p = open.dataset.open.split('|'); openExercise(p[0], p[1], +p[2]); return; }
     var hist = t.closest('[data-hist]'); if (hist) { var h = hist.dataset.hist.split('|'); openHistory(h[0], h[1], h[2]); return; }
 
@@ -447,7 +449,8 @@
      Boot
      ========================================================================== */
   S.onChange(function () { if (screen === 'account' && !ex.open) { var a = document.activeElement; if (!(a && a.id === 'accName')) render(); } });
-  S.onData(function () { softRerender(); });
+  S.onData(function () { DAYS.forEach(function (d) { S.rollIfNewWeek(d); }); softRerender(); });
+  DAYS.forEach(function (d) { S.rollIfNewWeek(d); });
   render();
   S.init();
 

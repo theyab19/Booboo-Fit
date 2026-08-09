@@ -179,6 +179,24 @@
   /* ---------------- public data API ---------------- */
   function markDirtyRow(key) { dirtyRows[key] = true; write(LS.dirtyR, dirtyRows); }
 
+  // Auto-advance a day's week when its current log is from an earlier calendar
+  // week (Sunday-based). Archives the old week → it becomes "last week" + history.
+  function rollIfNewWeek(day) {
+    var cur = curWeek(day), maxU = null;
+    Object.keys(rows).forEach(function (k) {
+      var p = k.split('|'); if (p[0] !== day || +p[2] !== cur) return;
+      var v = rows[k]; if (v && v.u) { var t = new Date(v.u).getTime(); if (!isNaN(t) && (maxU == null || t > maxU)) maxU = t; }
+    });
+    if (maxU == null) return false; // current week empty → nothing to archive
+    if (weekStartSunday(maxU).getTime() < weekStartSunday(new Date()).getTime()) {
+      week[day] = cur + 1; write(LS.week, week);
+      dirtyWeeks[day] = true; write(LS.dirtyW, dirtyWeeks);
+      scheduleSync();
+      return true;
+    }
+    return false;
+  }
+
   var Store = {
     cloudEnabled: CLOUD,
     onChange: function (cb) { listeners.push(cb); },
@@ -298,6 +316,7 @@
       return buckets;
     },
     set: function (day, ex, set, patch) {
+      rollIfNewWeek(day);
       var key = K(day, ex, curWeek(day), set);
       var v = rows[key] || { w: null, r: null, d: false };
       if ('weight' in patch) v.w = patch.weight;
@@ -325,6 +344,7 @@
       scheduleSync();
       emit();
     },
+    rollIfNewWeek: function (day) { return rollIfNewWeek(day); },
 
     init: function () {
       if (CLOUD && auth) {
