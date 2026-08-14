@@ -4,7 +4,7 @@
  * - Stale-while-revalidate for hotlinked GIFs; a failed GIF never breaks the page
  */
 
-const VERSION = 'booboo-fit-v12';
+const VERSION = 'booboo-fit-v13';
 const SHELL_CACHE = `${VERSION}-shell`;
 const FONT_CACHE = `${VERSION}-fonts`;
 const GIF_CACHE = `${VERSION}-gifs`;
